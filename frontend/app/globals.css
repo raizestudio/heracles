@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 :root {
+  --primary-100: #4A2668;
+
+  
   --background: #ffffff;
   --foreground: #171717;
 }

@@ -1,23 +1,30 @@
+"use client";
+
 import React from 'react';
 import Link from 'next/link';
+
 import { capitalize } from '@/utils/textHelper';
 
 interface MenuInterface {
   name: string;
   url: string;
+  requiresAuth?: boolean;
 }
 
 const NavbarComponent = () => {
   const MENUS: MenuInterface[] = [
     {
       name: 'home',
-      url: '/'
+      url: '/',
+      requiresAuth: false
     },
     {
       name: 'go to app',
-      url: '/app'
+      url: '/app',
+      requiresAuth: true
     }
   ]
+
   return (
     <nav className='flex justify-between px-4 py-1'>
       <div>
