@@ -4,8 +4,6 @@ import Link from "next/link";
 import useUserStore from "@/stores/userStore";
 import { usePathname } from "next/navigation";
 
-import { capitalize } from "@/utils/textHelper";
-
 // Icons
 import HomeIcon from "@/components/icons/HomeIcon";
 import HandsClappingIcon from "@/components/icons/HandsClappingIcon";
