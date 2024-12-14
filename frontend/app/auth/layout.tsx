@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 // Components
-import NavbarComponent from "@/components/navbar/NavbarComponent";
-import FooterApp from "@/components/footer/FooterApp";
+import NavbarComponent from "@/app/components/navbar/NavbarComponent";
+import FooterApp from "@/app/components/footer/FooterApp";
 
 export const metadata: Metadata = {
   title: "Heracles",

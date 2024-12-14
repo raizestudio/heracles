@@ -1,17 +1,23 @@
 import { create } from "zustand";
 
+import { UserInterface } from "@/app/interfaces/UserInterface";
+
 interface UserState {
-    id: number;
     isLoggedIn?: boolean;
-    login: () => void;
+    user?: UserInterface | null;
+    login: (user: UserInterface) => void;
     logout: () => void;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const useUserStore = create<UserState>((set) => ({ 
-  id: 0,
   isLoggedIn: false,
-  login: () => set({ isLoggedIn: true }),
+  user: null,
+  login: async (user: UserInterface) => {
+    set({ isLoggedIn: true });
+    set({ user: user });
+  }
+  ,
   logout: () => set({ isLoggedIn: false }),
 }));
 

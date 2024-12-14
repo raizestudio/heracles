@@ -1,10 +1,11 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from routers import auth, users
+from routers import auth, core, users
 from utils.db import Database
 
 app = FastAPI()
+app.include_router(core.router, tags=["Core"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 

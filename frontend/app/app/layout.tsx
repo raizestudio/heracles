@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
 // Components
-import NavbarComponent from "@/components/navbar/NavbarComponent";
-import FooterApp from "@/components/footer/FooterApp";
+import NavbarComponent from "@/app/components/navbar/NavbarComponent";
+import SidebarComponent from "@/app/components/sidebar/SidebarComponent";
+import FooterApp from "@/app/components/footer/FooterApp";
 
 export const metadata: Metadata = {
   title: "Heracles",
@@ -17,8 +18,11 @@ export default function AppLayout({
   return (
     <div className="flex flex-col">
       <NavbarComponent />
-      <div className="h-[calc(100vh-5rem)] flex grow">
-        {children}
+      <div className="relative h-[calc(100vh-5rem)] flex grow p-2">
+        <SidebarComponent />
+        <div className="grow rounded bg-gray-50 shadow p-2">
+          {children}
+        </div>
       </div>
       <FooterApp />
     </div>

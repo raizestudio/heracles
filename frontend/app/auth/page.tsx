@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 
 // Components
-import LoginComponent from "@/components/auth/LoginComponent";
-import RegisterComponent from "@/components/auth/RegisterComponent";
+import LoginComponent from "@/app/components/auth/LoginComponent";
+import RegisterComponent from "@/app/components/auth/RegisterComponent";
 
 const AuthPage = () => {
   const [currentView, setCurrentView] = useState("login");

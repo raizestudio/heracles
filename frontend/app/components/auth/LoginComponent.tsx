@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import InfoIcon from "../icons/InfoIcon";
 
 // Stores
-import useUserStore from "@/stores/userStore";
+import useUserStore from "@/app/stores/userStore";
 
 // Libs
 import { setCookie } from "@/app/actions/cookie";
@@ -34,8 +34,9 @@ const LoginComponent = () => {
       .then(async (data) => {
         console.log(data);
         localStorage.setItem("token", data.token);
+
         await setCookie("token", data.token);
-        login();
+        await login(data.user);
       })
       .then(() => {
         router.push("/app");
