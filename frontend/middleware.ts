@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export function middleware(request: NextRequest) {
-    const token = request.cookies.get("authToken"); // Replace with your actual auth logic
+    const token = request.cookies.get("token"); // Replace with your actual auth logic
 
     // List of paths to protect
     const protectedPaths = ["/app", "/profile", "/settings"];

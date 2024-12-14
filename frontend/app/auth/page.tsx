@@ -9,8 +9,8 @@ const AuthPage = () => {
   const [currentView, setCurrentView] = useState("login");
 
   return (
-    <div className="flex justify-center items-center grow">
-      <div className="flex flex-col bg-gray-100 w-1/4 rounded p-4">
+    <div className="h-[calc(100vh-5rem)] flex justify-center items-center grow">
+      <div className="flex flex-col bg-gray-100 w-3/4 md:w-2/4 xl:w-1/4 rounded p-4">
         {/* Button Container */}
         <div className="relative flex bg-primary-100 rounded h-10">
           {/* Sliding Background */}
@@ -24,10 +24,16 @@ const AuthPage = () => {
 
           {/* Login Button */}
           <button
-            className="relative z-10 grow text-center rounded text-white"
+            className="relative z-10 grow text-center rounded text-white px-4"
             onClick={() => setCurrentView("login")}
           >
-            <span className={`transition-all duration-500 ease-in-out ${currentView === "login" ? "text-black" : "text-gray-100"}`}>Login</span>
+            <span
+              className={`transition-all duration-500 ease-in-out ${
+                currentView === "login" ? "text-black" : "text-gray-100"
+              }`}
+            >
+              Connexion
+            </span>
           </button>
 
           {/* Register Button */}
@@ -35,7 +41,13 @@ const AuthPage = () => {
             className="relative z-10 grow text-center rounded text-white"
             onClick={() => setCurrentView("register")}
           >
-            <span className={`transition-all duration-500 ease-in-out ${currentView === "register" ? "text-black" : "text-gray-100"}`}>Register</span>
+            <span
+              className={`transition-all duration-500 ease-in-out ${
+                currentView === "register" ? "text-black" : "text-gray-100"
+              }`}
+            >
+              Créer un compte
+            </span>
           </button>
         </div>
 
