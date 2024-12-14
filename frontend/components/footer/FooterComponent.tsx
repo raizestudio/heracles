@@ -1,7 +1,7 @@
 import FooterLanding from "./FooterLanding";
 
 interface FooterComponentProps {
-  t: string;
+  t?: string;
 }
 
 const FooterComponent: React.FC<FooterComponentProps> = () => {

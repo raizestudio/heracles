@@ -1,5 +1,5 @@
 interface FooterAppProps {
-  t: string;
+  t?: string;
 }
 
 const FooterApp: React.FC<FooterAppProps> = () => {
