@@ -1,6 +1,6 @@
 
 interface FooterLandingProps {
-  // TODO
+  t?: string;
 }
 
 const FooterLanding: React.FC<FooterLandingProps> = () => {
