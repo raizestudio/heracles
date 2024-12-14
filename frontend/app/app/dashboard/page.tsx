@@ -1,8 +1,5 @@
-interface DashboardPageProps {
-  t?: string;
-}
 
-const DashboardPage: React.FC<DashboardPageProps> = () => {
+const DashboardPage = () => {
   return (
     <div>
       <h1>Dashboard</h1>
