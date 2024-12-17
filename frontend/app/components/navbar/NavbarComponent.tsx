@@ -16,6 +16,7 @@ import HandsClappingIcon from "@/app/components/icons/HandsClappingIcon";
 import LogoutIcon from "@/app/components/icons/LogoutIcon";
 import FlaskIcon from "@/app/components/icons/FlaskIcon";
 import NotificationIcon from "@/app/components/icons/NotificationIcon";
+import BirdIcon from "@/app/components/icons/BirdIcon";
 
 import { deleteCookie, getCookie } from "@/app/actions/cookie";
 import { useRouter } from "next/navigation";
@@ -69,9 +70,14 @@ const NavbarComponent = () => {
   return (
     <nav className="h-12 flex justify-between items-center px-4 bg-gray-50 shadow">
       <div className="flex items-center gap-2">
-        {process.env.NODE_ENV === "development" && (
+        {(process.env.NODE_ENV === "development" && process.env.DEMO === "false") && (
           <div className="bg-orange-500 p-1 rounded">
             <FlaskIcon className="fill-white" />
+          </div>
+        )}
+        {process.env.DEMO === "true" && (
+          <div className="bg-blue-500 p-1 rounded">
+            <BirdIcon className="fill-white" />
           </div>
         )}
         <Link
@@ -82,7 +88,7 @@ const NavbarComponent = () => {
         </Link>
         
       </div>
-      <span>{isLoggedIn ? 'yes' : 'no'} - {user?.username}</span>
+      <span>{process.env.DEMO} | {isLoggedIn ? 'yes' : 'no'} - {user?.username}</span>
       <div className="flex gap-1">
         <ul className="flex gap-2">
           {filteredMenus.map((menu, index) => (

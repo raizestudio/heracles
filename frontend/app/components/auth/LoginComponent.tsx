@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Icons
-import InfoIcon from "../icons/InfoIcon";
+import InfoIcon from "@/app/components/icons/InfoIcon";
 
 // Stores
 import useUserStore from "@/app/stores/userStore";

@@ -1,7 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  env: {},
+  env: {
+    DEMO: process.env.DEMO,
+  },
   images: {
     domains: ["localhost"],
   },
