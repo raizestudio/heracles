@@ -1,11 +1,8 @@
-interface ProfilePageProps {
-  t?: string;
-}
 
-const ProfilePage: React.FC<ProfilePageProps> = ({ t }) => {
+const ProfilePage = () => {
   return (
     <div>
-      <h1>Profil {t}</h1>
+      <h1>Profil</h1>
     </div>
   );
 };
