@@ -88,7 +88,6 @@ const NavbarComponent = () => {
         </Link>
         
       </div>
-      <span>{process.env.DEMO} | {isLoggedIn ? 'yes' : 'no'} - {user?.username}</span>
       <div className="flex gap-1">
         <ul className="flex gap-2">
           {filteredMenus.map((menu, index) => (
