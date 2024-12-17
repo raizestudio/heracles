@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Icons
@@ -10,9 +10,18 @@ import useUserStore from "@/app/stores/userStore";
 // Libs
 import { setCookie } from "@/app/actions/cookie";
 
-const LoginComponent = () => {
+// Components
+import LoadingSpinner from "@/app/components/loading/LoadingSpinner";
+
+interface LoginComponentProps {
+  isLoading?: boolean;
+  toggleLoading: (value: boolean) => void;
+}
+
+const LoginComponent: React.FC<LoginComponentProps> = ({ isLoading, toggleLoading }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  // const [isLoading, setIsLoading] = useState(true);
 
   const { login } = useUserStore();
 
@@ -20,6 +29,8 @@ const LoginComponent = () => {
 
   const handleLogin = async () => {
     "use client";
+    toggleLoading(true);
+    
     fetch("http://localhost:8000/auth/authenticate", {
       method: "POST",
       body: JSON.stringify({
@@ -36,10 +47,13 @@ const LoginComponent = () => {
         localStorage.setItem("token", data.token);
 
         await setCookie("token", data.token);
-        await login(data.user);
+        login(data.user);
       })
       .then(() => {
         router.push("/app");
+      })
+      .finally(() => {
+        toggleLoading(false);
       });
   };
   return (
@@ -77,10 +91,17 @@ const LoginComponent = () => {
       </div>
       <div className="flex pt-4">
         <button
-          className="grow p-1.5 bg-primary-100 rounded"
+          className="grow p-1.5 bg-primary-100 rounded disabled:bg-gray-200"
+          disabled={isLoading}
           onClick={handleLogin}
         >
-          <span className="text-white">Me connecter</span>
+          {isLoading ? (
+            <div>
+              <LoadingSpinner width="20" height="20" />
+            </div>
+          ) : (
+            <span className="text-white">Me connecter</span>
+          )}
         </button>
       </div>
     </div>

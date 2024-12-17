@@ -16,6 +16,7 @@ class UserRead(BaseModel):
     first_name: str = Field(None, max_length=30, description="First name of the user")
     last_name: str = Field(None, max_length=30, description="Last name of the user")
     is_active: bool = Field(default=True, description="Status of the user account")
+    avatar: str | None = Field(None, max_length=255, description="Avatar of the user")
 
     class Config:
         from_attributes = True

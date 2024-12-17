@@ -1,13 +1,18 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
 import useUserStore from "@/app/stores/userStore";
 import { usePathname } from "next/navigation";
+
+// Components
+import DropdownComponent from "@/app/components/dropdown/DropdownComponent";
 
 // Icons
 import HomeIcon from "@/app/components/icons/HomeIcon";
 import HandsClappingIcon from "@/app/components/icons/HandsClappingIcon";
-// import LogoutIcon from "@/components/icons/LogoutIcon";
+import LogoutIcon from "@/app/components/icons/LogoutIcon";
 import FlaskIcon from "@/app/components/icons/FlaskIcon";
 import NotificationIcon from "@/app/components/icons/NotificationIcon";
 
@@ -27,6 +32,8 @@ const NavbarComponent = () => {
   const router = useRouter();
   const { user, isLoggedIn, logout } = useUserStore();
 
+  const [isOpen, setIsOpen] = useState(false);
+
   const MENUS: MenuInterface[] = [
     {
       name: "accueil",
@@ -39,7 +46,7 @@ const NavbarComponent = () => {
       icon: HandsClappingIcon,
       url: "/app",
       requiresAuth: true,
-    }
+    },
   ];
 
   const filteredMenus = MENUS.filter((menu) => {
@@ -87,24 +94,69 @@ const NavbarComponent = () => {
                 router.push("/");
               }}
             >
-              {/* <LogoutIcon width={20} height={20} className="fill-gray-50" /> */}
-              
-            </button>
-            <button
-              className="flex items-center bg-gray-800 px-2 py-1 rounded"
-              onClick={() => {
-                deleteCookie("token");
-                logout();
-                router.push("/");
-              }}
-            >
-              <NotificationIcon width={20} height={20} className="fill-gray-50" />
+              <NotificationIcon
+                width={20}
+                height={20}
+                className="fill-gray-50"
+              />
             </button>
           </div>
         )}
-        <button className="flex items-center gap-1 bg-gray-800 px-2 py-1 rounded">
-          <span className="text-sm text-gray-50">{ user?.username }</span>
-        </button>
+        {isLoggedIn && (
+          <DropdownComponent isOpen={isOpen}>
+            <DropdownComponent.Trigger>
+              <button
+                className="flex items-center gap-1 p-0.5 bg-gray-800 rounded"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                {user?.avatar && (
+                  <Image
+                    src={`http://localhost:8000/${user?.avatar}`}
+                    alt="avatar"
+                    className="w-6 h-6 object-cover rounded"
+                    width={256}
+                    height={256}
+                  />
+                )}
+                <div className="flex justify-center px-2">
+                  <span className="text-gray-50 text-sm font-semibold">
+                    {user?.username}
+                  </span>
+                </div>
+              </button>
+            </DropdownComponent.Trigger>
+            <DropdownComponent.Content>
+              <div className="flex flex-col gap-3">
+                <div className="flex justify-between items-center">
+                  <span>{user?.first_name || "Devuser"}</span>
+
+                  <button
+                    className="flex items-center bg-gray-800 px-2 py-1 rounded"
+                    onClick={() => {
+                      deleteCookie("token");
+                      logout();
+                      router.push("/");
+                    }}
+                  >
+                    <LogoutIcon
+                      width={20}
+                      height={20}
+                      className="fill-gray-50"
+                    />
+                  </button>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <Link
+                    href="/app/profile"
+                    className="flex items-center gap-1 bg-gray-800 px-2 py-1 rounded"
+                  >
+                    <span className="text-sm text-gray-50">Profile</span>
+                  </Link>
+                </div>
+              </div>
+            </DropdownComponent.Content>
+          </DropdownComponent>
+        )}
       </div>
     </nav>
   );

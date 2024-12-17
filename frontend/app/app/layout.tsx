@@ -1,4 +1,6 @@
+'use client';
 import type { Metadata } from "next";
+import { useEffect } from "react";
 
 // Components
 import NavbarComponent from "@/app/components/navbar/NavbarComponent";
@@ -15,6 +17,14 @@ export default function AppLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      window.location.href = "/auth";
+    }
+  }, []);
   return (
     <div className="flex flex-col">
       <NavbarComponent />

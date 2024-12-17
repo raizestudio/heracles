@@ -1,7 +1,8 @@
 from typing import List
 
-from fastapi import APIRouter, HTTPException, status
-from tortoise.exceptions import IntegrityError
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from tortoise.contrib.fastapi import HTTPNotFoundError
+from tortoise.exceptions import DoesNotExist, IntegrityError
 
 from models.users import User
 from schemas.users import UserCreate, UserRead
@@ -72,3 +73,29 @@ async def delete_user(user_id: int):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     await _user.delete()
     return {"message": "User deleted successfully", "user": _user}
+
+
+@router.post("/{user_id}/upload-avatar", response_model=dict)
+async def upload_avatar(user_id: int, file: UploadFile = File(...)):
+    """
+    Endpoint to upload a user's avatar.
+    """
+    # Validate the file type (optional)
+    if file.content_type not in ["image/jpeg", "image/png"]:
+        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG or PNG allowed.")
+
+    try:
+        user = await User.get(id=user_id)
+    except DoesNotExist:
+        raise HTTPException(status_code=404, detail="User not found.")
+
+    # Save the file to a directory
+    file_location = f"uploads/avatars/{user_id}_{file.filename}"
+    with open(file_location, "wb") as f:
+        f.write(await file.read())
+
+    # Update the user's avatar field
+    user.avatar = file_location
+    await user.save()
+
+    return {"message": "Avatar uploaded successfully", "avatar_url": file_location}

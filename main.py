@@ -1,5 +1,8 @@
+import os
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from routers import auth, core, users
 from utils.db import Database
@@ -8,6 +11,14 @@ app = FastAPI()
 app.include_router(core.router, tags=["Core"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
+
+try:
+    os.makedirs("uploads")
+    os.makedirs("uploads/avatars")
+except FileExistsError:
+    pass
+
+app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 Database.init(app)
 
@@ -30,6 +41,7 @@ async def read_root():
     return {"message": "Hestia is running"}
 
 
-# @app.get("/items/{item_id}")
-# async def read_item(item_id: int, q: Union[str, None] = None):
-#     return {"item_id": item_id, "q": q}
+# if __name__ == "__main__":
+#     import uvicorn
+
+#     uvicorn.run(app, host="0.0.0.0", port=8000)

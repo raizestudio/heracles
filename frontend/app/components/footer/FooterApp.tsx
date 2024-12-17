@@ -37,7 +37,7 @@ const FooterApp: React.FC<FooterAppProps> = () => {
   useEffect(() => {
     setInterval(() => {
       healthCheck();
-    }, 2000);
+    }, 10000);
   }, []);
 
   return (
