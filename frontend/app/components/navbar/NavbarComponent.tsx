@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useState } from "react";
 import useUserStore from "@/app/stores/userStore";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 // Components
 import DropdownComponent from "@/app/components/dropdown/DropdownComponent";
@@ -16,7 +17,7 @@ import LogoutIcon from "@/app/components/icons/LogoutIcon";
 import FlaskIcon from "@/app/components/icons/FlaskIcon";
 import NotificationIcon from "@/app/components/icons/NotificationIcon";
 
-import { deleteCookie } from "@/app/actions/cookie";
+import { deleteCookie, getCookie } from "@/app/actions/cookie";
 import { useRouter } from "next/navigation";
 
 interface MenuInterface {
@@ -30,7 +31,7 @@ const NavbarComponent = () => {
   const pathname = usePathname();
 
   const router = useRouter();
-  const { user, isLoggedIn, logout } = useUserStore();
+  const { user, isLoggedIn, logout, login } = useUserStore();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -56,6 +57,15 @@ const NavbarComponent = () => {
     return menu.url !== pathname;
   });
 
+  useEffect(() => {
+    const getCookieToken = async () => {
+      const token = await getCookie("token");
+      if (token) {
+        login({ username: "test", email: "t@t.co", id: 1, password: "test", first_name: "test", last_name: "test", avatar: "" });
+      }
+    }
+    getCookieToken();
+  }, []);
   return (
     <nav className="h-12 flex justify-between items-center px-4 bg-gray-50 shadow">
       <div className="flex items-center gap-2">
@@ -70,7 +80,9 @@ const NavbarComponent = () => {
         >
           Heracles
         </Link>
+        
       </div>
+      <span>{isLoggedIn ? 'yes' : 'no'} - {user?.username}</span>
       <div className="flex gap-1">
         <ul className="flex gap-2">
           {filteredMenus.map((menu, index) => (
