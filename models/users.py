@@ -1,7 +1,20 @@
+from enum import Enum
+
 from tortoise import fields
 from tortoise.manager import Manager
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
+
+
+class StatusEnum(str, Enum):
+    ACTIVE = "active"
+
+
+class RoleEnum(str, Enum):
+    ADMIN = "admin"
+    MANAGER = "manager"
+    PATRON = "patron"
+    OPERATOR = "operator"
 
 
 class UserManager(Manager):
@@ -32,6 +45,7 @@ class User(Model):
     last_name = fields.CharField(max_length=50)
     is_active = fields.BooleanField(default=True)
     avatar = fields.CharField(max_length=255, null=True)
+    role = fields.CharEnumField(RoleEnum, default=RoleEnum.PATRON)
 
     def __str__(self):
         return self.username
