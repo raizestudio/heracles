@@ -62,7 +62,19 @@ const NavbarComponent = () => {
     const getCookieToken = async () => {
       const token = await getCookie("token");
       if (token) {
-        login({ username: "test", email: "t@t.co", id: 1, password: "test", first_name: "test", last_name: "test", avatar: "" });
+        fetch("http://localhost:8000/auth/authenticate/token/", {
+          method: "POST",
+          body: JSON.stringify({
+            token: token
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+        .then((res) => res.json())
+        .then(async (data) => {
+          login(data.user)
+        })
       }
     }
     getCookieToken();
@@ -137,7 +149,7 @@ const NavbarComponent = () => {
                 )}
                 <div className="flex justify-center px-2">
                   <span className="text-gray-50 text-sm font-semibold">
-                    {user?.username}
+                    {user?.first_name}
                   </span>
                 </div>
               </button>

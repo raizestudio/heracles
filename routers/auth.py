@@ -1,8 +1,10 @@
 import jwt
 from fastapi import APIRouter, HTTPException, status
+from fastapi.encoders import jsonable_encoder
 
+from models.auth import Token
 from models.users import User
-from schemas.auth import AuthenticaSchema
+from schemas.auth import AuthenticationSchema, AuthenticationTokenSchema
 from schemas.users import UserCreate, UserRead
 from utils.crypt import check_password, hash_password
 
@@ -26,9 +28,10 @@ async def regiser_user(user: UserCreate):
 
 
 @router.post("/authenticate")
-async def authenticate_user(authentication: AuthenticaSchema):
+async def authenticate_user(authentication: AuthenticationSchema):
     _user = await User.get(email=authentication.email)
     token = jwt.encode({"email": _user.email}, "secret", algorithm="HS256")
+    _token = await Token.create(token=token, user=_user)
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
@@ -36,3 +39,14 @@ async def authenticate_user(authentication: AuthenticaSchema):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
     return {"message": "User authenticated successfully", "user": _user, "token": token}
+
+
+@router.post("/authenticate/token")
+async def authenticate_token_user(authentication: AuthenticationTokenSchema):
+    _token = await Token.get(token=authentication.token).prefetch_related("user")
+    user_data = UserRead.model_validate(_token.user)
+
+    if not _token:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token match not found")
+
+    return {"message": "User authenticated successfully", "user": user_data, "token": _token.token}
