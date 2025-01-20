@@ -42,8 +42,7 @@ def authenticate(email: str, password: str):
                 return
 
             try:
-                _session = await Session.get(user=_user).prefetch_related("token")
-                r_print(f"[bold]User[/bold] [italic]{_user}[/italic] [bold]already has a session[/bold] {_session} [bold].[/bold]")
+                _session = await Session.get(user=_user).prefetch_related("token", "refresh")
 
                 generated_token = generate_token(email)
                 generated_refresh_token = generate_refresh_token()
@@ -77,6 +76,52 @@ def authenticate(email: str, password: str):
         await Tortoise.close_connections()
 
     run_async(_authenticate())
+
+
+@app.command()
+def authenticatetoken(token: str, refresh: str):
+    """
+    Authenticate user using provided token.
+
+    :param token: The jwt token.
+
+    """
+
+    async def _authenticate_token():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": ["models.users", "models.auth"]},
+        )
+        decoded_result = decode_token(token=token)
+
+        if "email" in decoded_result:
+            _user = await User.get(email=decoded_result["email"])
+            _session = await Session.get(user=_user)
+
+            r_print(f"Session {_session} is valid, the user [italic]{_user}[/italic] is autheticated.")
+
+        elif "error" in decoded_result:
+            if decoded_result["error"] == "expired":
+                try:
+                    _refresh = await Refresh.get(token=refresh).prefetch_related("user")
+                    _session = await Session.get(refresh=_refresh)
+
+                    if _refresh.is_valid():
+                        generated_token = generate_token(user_email=_refresh.user.email)
+                        _token = await Token.create(token=generated_token, user=_refresh.user)
+
+                        _session.token = _token
+                        await _session.save()
+
+                        r_print(f"[bold]Generated jwt token[/bold] [bold gray]->[/bold gray] [blue]{generated_token}[/blue]")
+                        r_print(f"[bold]Generated session [/bold] [bold gray]->[/bold gray] [blue]{_session}[/blue]")
+
+                except DoesNotExist:
+                    pass
+
+        await Tortoise.close_connections()
+
+    run_async(_authenticate_token())
 
 
 # @app.command()

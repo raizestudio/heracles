@@ -15,7 +15,7 @@ def check_password(password: str, hashed: str) -> bool:
     return bcrypt_checkpw(password.encode(), hashed.encode())
 
 
-def generate_token(user_email: str, token_exp: int = 60):
+def generate_token(user_email: str, token_exp: int = 10):
     """
     Generate a token using jwt.
 
@@ -45,10 +45,10 @@ def decode_token(token: str):
     try:
         decoded_token = jwt.decode(token, "secret", algorithms="HS256")
 
-        return True
+        return decoded_token
 
     except jwt.ExpiredSignatureError:
-        return False
+        return {"error": "expired"}
 
     except jwt.InvalidSignatureError:
         return False

@@ -1,7 +1,14 @@
+from datetime import datetime, timedelta, timezone
+
 from tortoise import fields
 from tortoise.manager import Manager
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
+
+
+def default_expire_at():
+    """Return a datetime 24 hours from now."""
+    return datetime.now(timezone.utc) + timedelta(hours=24)
 
 
 class TokenManager(Manager):
@@ -16,8 +23,9 @@ class Token(Model):
     """Model for tokens."""
 
     token = fields.CharField(max_length=255, pk=True)
-    user = fields.ForeignKeyField("models.User", related_name="tokens")
     created_at = fields.DatetimeField(auto_now_add=True)
+
+    user = fields.ForeignKeyField("models.User", related_name="tokens")
 
     def __str__(self):
         return self.token
@@ -29,6 +37,14 @@ class Refresh(Model):
     token = fields.CharField(max_length=255, pk=True)
     user = fields.ForeignKeyField("models.User", related_name="refresh_tokens")
     created_at = fields.DatetimeField(auto_now_add=True)
+    expire_at = fields.DatetimeField(default=default_expire_at)
+
+    def is_valid(self) -> bool:
+        """
+        Check if the refresh token is valid (i.e., not expired).
+        :return: True if valid, False otherwise.
+        """
+        return datetime.now(timezone.utc) < self.expire_at
 
     def __str__(self):
         return self.token
