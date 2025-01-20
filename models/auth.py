@@ -1,9 +1,25 @@
 from datetime import datetime, timedelta, timezone
+from enum import Enum
 
 from tortoise import fields
 from tortoise.manager import Manager
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
+
+
+class IPTypeEnum(str, Enum):
+    UNKNOWN = "unknown"
+    PUBLIC = "public"
+    PRIVATE = "private"
+
+
+class IPClassEnum(str, Enum):
+    UNKNOWN = "unknown"
+    A = "A"
+    B = "B"
+    C = "C"
+    D = "D"
+    E = "E"
 
 
 def default_expire_at():
@@ -54,11 +70,18 @@ class Session(Model):
     """Model for sessions"""
 
     id = fields.UUIDField(pk=True)
+    ip_v4 = fields.CharField(max_length=15, null=True)
+    ip_v6 = fields.CharField(max_length=64, null=True)
+    ip_type = fields.CharEnumField(IPTypeEnum, default=IPTypeEnum.UNKNOWN)
+    ip_class = fields.CharEnumField(IPClassEnum, default=IPClassEnum.UNKNOWN)
+    os = fields.CharField(max_length=255, null=True)
+    user_agent = fields.CharField(max_length=255, null=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
     token = fields.ForeignKeyField("models.Token", related_name="tokens")
     refresh = fields.ForeignKeyField("models.Refresh", related_name="refresh_tokens")
     user = fields.ForeignKeyField("models.User", related_name="users")
-
-    created_at = fields.DatetimeField(auto_now_add=True)
 
     def __str__(self):
         return str(self.id)

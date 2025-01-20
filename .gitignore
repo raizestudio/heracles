@@ -46,3 +46,6 @@ debug.log
 # Environment files
 *.env
 !.env.example
+
+# Media
+uploads/
