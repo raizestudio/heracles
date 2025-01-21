@@ -2,12 +2,11 @@ import sys
 from pathlib import Path
 
 import typer
+from rich import print as r_print
 from tortoise import Tortoise, run_async
+from tortoise.exceptions import DoesNotExist
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
-
-from rich import print as r_print
-from tortoise.exceptions import DoesNotExist
 
 from config import Settings
 from models.auth import Refresh, Session, Token

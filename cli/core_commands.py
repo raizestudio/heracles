@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 
 import typer
+from cli_utils import load_fixture
 from rich import print as r_print
 from rich.console import Console
 from rich.table import Table
@@ -72,6 +73,16 @@ def getmenu(name: str):
         await Tortoise.close_connections()
 
     run_async(_get_menu())
+
+
+@app.command()
+def loadfixture(app: str, model: str, env: str = typer.Argument("prod")):
+    """Load fixture data"""
+
+    async def _load_fixture():
+        await load_fixture(app, model, env)
+
+    run_async(_load_fixture())
 
 
 if __name__ == "__main__":
