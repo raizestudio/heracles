@@ -55,5 +55,28 @@ def createcontinent(code: str, name: str):
     run_async(_create_continent())
 
 
+@app.command()
+def getcontinent(code: str):
+    """Get continent"""
+
+    async def _get_continent():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": ["models.geo"]},
+        )
+        try:
+            _continent = await Continent.get(code=code)
+            table = Table("Code", "Name")
+            table.add_row(_continent.code, _continent.name)
+            console.print(table)
+
+        except DoesNotExist:
+            typer.echo(f"Continent with code {code} does not exist.")
+
+        await Tortoise.close_connections()
+
+    run_async(_get_continent())
+
+
 if __name__ == "__main__":
     app()
