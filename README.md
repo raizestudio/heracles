@@ -1,4 +1,4 @@
-# HESTIA
+# HERACLES
 
 Description placeholder.
 
