@@ -33,9 +33,8 @@ const LoginComponent: React.FC<LoginComponentProps> = ({ isLoading, toggleLoadin
   const { login } = useUserStore();
   const router = useRouter();
 
-  // SWR Mutation Hook
   const { trigger } = useSWRMutation(
-    "http://localhost:8000/auth/authenticate",
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/authenticate`,
     async (url: string, { arg }: { arg: { email: string; password: string } }) =>
       fetcher<{ token: string; user: UserInterface }>(url, {
         method: "POST",
@@ -46,7 +45,7 @@ const LoginComponent: React.FC<LoginComponentProps> = ({ isLoading, toggleLoadin
   const handleLogin = async () => {
     try {
       toggleLoading(true);
-      setErrorMessage(null); // Clear previous error
+      setErrorMessage(null);
 
       const data = await trigger({ email, password });
 

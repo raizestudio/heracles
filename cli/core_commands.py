@@ -13,10 +13,17 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from config import Settings
 from models.core import Menu
+from models.geo import Continent
 
 app = typer.Typer()
 settings = Settings()
 console = Console()
+
+AVAILABLE_FIXTURES = [
+    "geo.language",
+    "geo.currency",
+    "geo.continent",
+]
 
 
 @app.command()
@@ -76,6 +83,23 @@ def getmenu(name: str):
 
 
 @app.command()
+def resetdb():
+    """Reset database"""
+
+    async def _reset_db():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": ["models.core", "models.users", "models.services", "models.assets", "models.auth", "models.geo"]},
+        )
+        await Menu.all().delete()
+        await Continent.all().delete()
+
+        await Tortoise.close_connections()
+
+    run_async(_reset_db())
+
+
+@app.command()
 def loadfixture(app: str, model: str, env: str = typer.Argument("prod")):
     """Load fixture data"""
 
@@ -83,6 +107,23 @@ def loadfixture(app: str, model: str, env: str = typer.Argument("prod")):
         await load_fixture(app, model, env)
 
     run_async(_load_fixture())
+
+
+@app.command()
+def loadallfixtures(env: str = typer.Argument("prod")):
+    """
+    Load all fixture data
+
+    Args:
+        env: The environment to load the fixtures.
+    """
+
+    async def _load_all_fixtures():
+        for fixture in AVAILABLE_FIXTURES:
+            app, model = fixture.split(".")
+            await load_fixture(app, model, env)
+
+    run_async(_load_all_fixtures())
 
 
 if __name__ == "__main__":

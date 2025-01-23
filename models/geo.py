@@ -20,6 +20,7 @@ class Currency(Model):
     code = fields.CharField(pk=True, max_length=3, unique=True)
     code_numeric = fields.CharField(max_length=3, unique=True)
     name = fields.CharField(max_length=50, unique=True)
+    symbol = fields.CharField(max_length=5, null=True)
     minor_unit = fields.IntField()
 
     def __str__(self):
@@ -29,7 +30,7 @@ class Currency(Model):
 class Continent(Model):
     """Model for continents."""
 
-    code = fields.CharField(max_length=2, unique=True)
+    code = fields.CharField(pk=True, max_length=2, unique=True)
     name = fields.CharField(max_length=50, unique=True)
 
     def __str__(self):
