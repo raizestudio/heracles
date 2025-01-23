@@ -6,7 +6,7 @@ from models.auth import Token
 from models.users import User
 from schemas.auth import AuthenticationSchema, AuthenticationTokenSchema
 from schemas.users import UserCreate, UserRead
-from utils.crypt import check_password, hash_password
+from utils.crypt import check_password, generate_token, hash_password
 
 router = APIRouter()
 
@@ -18,7 +18,7 @@ router = APIRouter()
         status.HTTP_401_UNAUTHORIZED: {"description": "Unauthorized"},
     },
 )
-async def regiser_user(user: UserCreate):
+async def register_user(user: UserCreate):
     encrypted_password = hash_password(user.password)
     _, created = await User.get_or_create(username=user.username, password=encrypted_password, email=user.email, first_name=user.first_name, last_name=user.last_name)
     if not created:
@@ -30,7 +30,7 @@ async def regiser_user(user: UserCreate):
 @router.post("/authenticate")
 async def authenticate_user(authentication: AuthenticationSchema):
     _user = await User.get(email=authentication.email)
-    token = jwt.encode({"email": _user.email}, "secret", algorithm="HS256")
+    token = generate_token(_user.email)
     _token = await Token.create(token=token, user=_user)
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

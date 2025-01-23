@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import useSWRMutation from "swr/mutation";
 
 // Icons
 import InfoIcon from "@/app/components/icons/InfoIcon";
@@ -13,6 +14,12 @@ import { setCookie } from "@/app/actions/cookie";
 // Components
 import LoadingSpinner from "@/app/components/loading/LoadingSpinner";
 
+// Fetcher
+import { fetcher } from "@/app/utils/fetcher";
+
+// Interfaces
+import { UserInterface } from "@/app/interfaces/UserInterface";
+
 interface LoginComponentProps {
   isLoading?: boolean;
   toggleLoading: (value: boolean) => void;
@@ -21,53 +28,61 @@ interface LoginComponentProps {
 const LoginComponent: React.FC<LoginComponentProps> = ({ isLoading, toggleLoading }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [isLoading, setIsLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const { login } = useUserStore();
-
   const router = useRouter();
 
-  const handleLogin = async () => {
-    "use client";
-    toggleLoading(true);
-    
-    fetch("http://localhost:8000/auth/authenticate", {
-      method: "POST",
-      body: JSON.stringify({
-        email: email,
-        password: password,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => res.json())
-      .then(async (data) => {
-        console.log(data);
-        localStorage.setItem("token", data.token);
+  // SWR Mutation Hook
+  const { trigger } = useSWRMutation(
+    "http://localhost:8000/auth/authenticate",
+    async (url: string, { arg }: { arg: { email: string; password: string } }) =>
+      fetcher<{ token: string; user: UserInterface }>(url, {
+        method: "POST",
+        body: JSON.stringify(arg),
+      })
+  );
 
+  const handleLogin = async () => {
+    try {
+      toggleLoading(true);
+      setErrorMessage(null); // Clear previous error
+
+      const data = await trigger({ email, password });
+
+      if (data) {
+        // Save token and login user
+        localStorage.setItem("token", data.token);
         await setCookie("token", data.token);
         login(data.user);
-      })
-      .then(() => {
+
+        // Navigate to app
         router.push("/app");
-      })
-      .finally(() => {
-        toggleLoading(false);
-      });
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        // Handle the error as an instance of the Error object
+        setErrorMessage(error.message || "Failed to log in.");
+      } else {
+        // Fallback for unknown error structures
+        setErrorMessage("An unexpected error occurred.");
+      }
+    } finally {
+      toggleLoading(false);
+    }
   };
+
   return (
     <div className="flex flex-col grow">
       <div className="flex justify-center py-4">
         <div className="flex gap-1 p-2 bg-blue-200 rounded">
-          <div className="">
+          <div>
             <InfoIcon />
           </div>
           <span className="text-xs">
             Lorem Ipsum is simply dummy text of the printing and typesetting
             industry. Lorem Ipsum has been the industry{`'`}s standard dummy
-            text ever since the 1500s, when an unknown printer took a galley of
-            type and scrambled it to make a type specimen book.
+            text ever since the 1500s.
           </span>
         </div>
       </div>
@@ -77,18 +92,19 @@ const LoginComponent: React.FC<LoginComponentProps> = ({ isLoading, toggleLoadin
           className="p-2 rounded outline-none text-center"
           type="email"
           placeholder="Email"
+          value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <span>{email}</span>
-        <label className="text-xs">Mot de passe</label>
+        <label className="text-xs">Password</label>
         <input
           className="p-2 rounded outline-none text-center"
           type="password"
           placeholder="Password"
+          value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <span>{password}</span>
       </div>
+      {errorMessage && <p className="text-red-500 text-xs">{errorMessage}</p>}
       <div className="flex pt-4">
         <button
           className="grow p-1.5 bg-primary-100 rounded disabled:bg-gray-200"
