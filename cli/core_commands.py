@@ -23,6 +23,7 @@ AVAILABLE_FIXTURES = [
     "geo.language",
     "geo.currency",
     "geo.continent",
+    "geo.country",
 ]
 
 

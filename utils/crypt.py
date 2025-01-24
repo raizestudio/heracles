@@ -15,7 +15,7 @@ def check_password(password: str, hashed: str) -> bool:
     return bcrypt_checkpw(password.encode(), hashed.encode())
 
 
-def generate_token(user_email: str, token_exp: int = 10):
+def generate_token(user_email: str, token_exp: int = 800):
     """
     Generate a token using jwt.
 

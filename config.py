@@ -2,7 +2,7 @@ from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
-    app_name: str = "Hestia"
+    app_name: str = "Heracles"
     db_user: str = "heracles"
     db_password: str = "heracles"
     db_host: str = "localhost"

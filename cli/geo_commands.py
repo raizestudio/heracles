@@ -211,5 +211,103 @@ def getlanguage(code: str):
     run_async(_get_language())
 
 
+@app.command()
+def listcountries():
+    """List all countries."""
+
+    async def _list_countries():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": ["models.geo"]},
+        )
+        _countries = await Country.all()
+        table = Table("Code Iso 2", "Code Iso 3")
+        for country in _countries:
+            table.add_row(country.code_iso2, country.code_iso3)
+        console.print(table)
+
+        await Tortoise.close_connections()
+
+    run_async(_list_countries())
+
+
+@app.command()
+def createcountry(
+    code_iso2: str,
+    code_iso3: str,
+    onu_code: str,
+    name: str,
+    language: str,
+    continent: str,
+    currency: str,
+):
+    """
+    Create country
+
+    Args:
+        code_iso2 (str): Country code ISO 2
+        code_iso3 (str): Country code ISO 3
+        onu_code (str): Country ONU code
+        name (str): Country name
+        language (str): Language code
+        continent (str): Continent code
+        currency (str): Currency code
+    """
+
+    async def _create_country():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": ["models.geo"]},
+        )
+        _language = await Language.get(code=language)
+        _continent = await Continent.get(code=continent)
+        _currency = await Currency.get(code=currency)
+        _country = await Country.create(
+            code_iso2=code_iso2,
+            code_iso3=code_iso3,
+            onu_code=onu_code,
+            name=name,
+            language_official=_language,
+            continent=_continent,
+            currency=_currency,
+        )
+        typer.echo(_country)
+
+        await Tortoise.close_connections()
+
+    run_async(_create_country())
+
+
+@app.command()
+def getcountry(code_iso2: str):
+    """Get country"""
+
+    async def _get_country():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": ["models.geo"]},
+        )
+        try:
+            _country = await Country.get(code_iso2=code_iso2).prefetch_related("continent", "currency", "language_official")
+            table = Table("Code Iso 2", "Code Iso 3", "ONU Code", "Name", "Language Officiel", "Continent", "Currency")
+            table.add_row(
+                _country.code_iso2,
+                _country.code_iso3,
+                _country.onu_code,
+                _country.name,
+                _country.language_official.name,
+                _country.continent.name,
+                _country.currency.name,
+            )
+            console.print(table)
+
+        except DoesNotExist:
+            typer.echo(f"Country with code ISO 2 {code_iso2} does not exist.")
+
+        await Tortoise.close_connections()
+
+    run_async(_get_country())
+
+
 if __name__ == "__main__":
     app()

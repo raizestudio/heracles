@@ -4,10 +4,15 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from config import Settings
+from middlewares.authentication import jwt_auth_middleware
 from routers import auth, core, users
 from utils.db import Database
 
 app = FastAPI()
+
+app.middleware("http")(jwt_auth_middleware)
+
 app.include_router(core.router, tags=["Core"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(auth.router, prefix="/auth", tags=["Auth"])
@@ -38,7 +43,7 @@ app.add_middleware(
 
 @app.get("/")
 async def read_root():
-    return {"message": "Hestia is running"}
+    return {"message": f"{Settings().app_name} is running"}
 
 
 # if __name__ == "__main__":
