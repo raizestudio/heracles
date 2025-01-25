@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+import signals  # noqa
 from config import Settings
 from middlewares.authentication import jwt_auth_middleware
 from routers import auth, core, users

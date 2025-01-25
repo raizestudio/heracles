@@ -6,6 +6,7 @@ from tortoise import Tortoise, run_async
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
+import signals.users
 from config import Settings
 from models.users import User
 from utils.crypt import hash_password

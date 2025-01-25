@@ -28,6 +28,7 @@ AVAILABLE_FIXTURES = [
     "geo.administrative_level_one",
     "geo.administrative_level_two",
     "geo.city_type",
+    "geo.city",
 ]
 
 

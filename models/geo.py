@@ -117,7 +117,7 @@ class AdministrativeLevelTwo(Model):
 class CityType(Model):
     """Model for city types."""
 
-    code = fields.CharField(max_length=10)
+    code = fields.CharField(pk=True, max_length=10)
     name = fields.CharField(max_length=32)
     description = fields.TextField(null=True)
     population_min = fields.IntField(null=True)
@@ -133,8 +133,8 @@ class City(Model):
     name = fields.CharField(max_length=50, unique=True)
 
     city_type = fields.ForeignKeyField("models.CityType", related_name="city_type")
-    administrative_level_one = fields.ForeignKeyField("models.AdministrativeLevelOne", related_name="administrative_level_one")
-    administrative_level_two = fields.ForeignKeyField("models.AdministrativeLevelTwo", related_name="administrative_level_two")
+    administrative_level_one = fields.ForeignKeyField("models.AdministrativeLevelOne", related_name="administrative_level_one", null=True)
+    administrative_level_two = fields.ForeignKeyField("models.AdministrativeLevelTwo", related_name="administrative_level_two", null=True)
 
     def __str__(self):
         return self.name
@@ -158,3 +158,5 @@ class Street(Model):
 
     def __str__(self):
         return self.name
+
+
