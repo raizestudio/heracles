@@ -1,7 +1,15 @@
+from enum import IntEnum
+
 from tortoise import fields
 from tortoise.manager import Manager
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
+
+
+class AdministrativeLevelsEnum(IntEnum):
+    ZERO = 0
+    ONE = 1
+    TWO = 2
 
 
 class Language(Model):
@@ -64,6 +72,9 @@ class CountryData(Model):
     gdp_per_capita = fields.FloatField(null=True)
     inflation = fields.FloatField(null=True)
     human_development_index = fields.FloatField(null=True)
+    administrative_levels = fields.IntEnumField(enum_type=AdministrativeLevelsEnum, default=AdministrativeLevelsEnum.ZERO)
+    administrative_level_one_label = fields.CharField(max_length=64, null=True)
+    administrative_level_two_label = fields.CharField(max_length=64, null=True)
 
     country = fields.OneToOneField("models.Country", related_name="country_data_country")
 
@@ -85,7 +96,6 @@ class AdministrativeLevelOne(Model):
     """Model for administrative level one."""
 
     name = fields.CharField(max_length=50, unique=True)
-    country_label = fields.CharField(max_length=50, unique=True)
 
     country = fields.ForeignKeyField("models.Country", related_name="administrative_level_one_country")
 
@@ -97,7 +107,6 @@ class AdministrativeLevelTwo(Model):
     """Model for administrative level two."""
 
     name = fields.CharField(max_length=50, unique=True)
-    country_label = fields.CharField(max_length=50, unique=True)
 
     administrative_level_one = fields.ForeignKeyField("models.AdministrativeLevelOne", related_name="administrative_level_two_administrative_level_one")
 
@@ -105,11 +114,25 @@ class AdministrativeLevelTwo(Model):
         return self.name
 
 
+class CityType(Model):
+    """Model for city types."""
+
+    code = fields.CharField(max_length=10)
+    name = fields.CharField(max_length=32)
+    description = fields.TextField(null=True)
+    population_min = fields.IntField(null=True)
+    population_max = fields.IntField(null=True)
+
+    def __str__(self):
+        return self.code
+
+
 class City(Model):
     """Model for cities."""
 
     name = fields.CharField(max_length=50, unique=True)
 
+    city_type = fields.ForeignKeyField("models.CityType", related_name="city_type")
     administrative_level_one = fields.ForeignKeyField("models.AdministrativeLevelOne", related_name="administrative_level_one")
     administrative_level_two = fields.ForeignKeyField("models.AdministrativeLevelTwo", related_name="administrative_level_two")
 

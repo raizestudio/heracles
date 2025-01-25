@@ -13,7 +13,11 @@ from config import Settings
 settings = Settings()
 
 
-async def load_fixture(app: str, model: str, env: str = "prod"):
+def format_fixture_name(string: str) -> str:
+    return string.replace("_", " ").title().replace(" ", "")
+
+
+async def load_fixture(app: str, model: str, env: str = "prod") -> None:
     await Tortoise.init(
         db_url=settings.db_url,
         modules={"models": [f"models.{app}"]},
@@ -22,7 +26,7 @@ async def load_fixture(app: str, model: str, env: str = "prod"):
     await Tortoise.generate_schemas()
 
     module = importlib.import_module(f"models.{app}")
-    model_class = getattr(module, model.capitalize())
+    model_class = getattr(module, format_fixture_name(model))
 
     with open(f"fixtures/{env}/{model}.json", "r") as f:
         data = json.load(f)

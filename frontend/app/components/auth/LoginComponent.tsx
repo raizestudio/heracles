@@ -34,7 +34,7 @@ const LoginComponent: React.FC<LoginComponentProps> = ({ isLoading, toggleLoadin
   const router = useRouter();
 
   const { trigger } = useSWRMutation(
-    `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/authenticate`,
+    `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/authenticate/`,
     async (url: string, { arg }: { arg: { email: string; password: string } }) =>
       fetcher<{ token: string; user: UserInterface }>(url, {
         method: "POST",

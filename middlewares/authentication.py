@@ -9,6 +9,7 @@ ALGORITHM = "HS256"
 PUBLIC_ROUTES = [
     "/",
     "/auth/authenticate",
+    "/auth/authenticate/token",
 ]
 app = FastAPI()
 

@@ -24,6 +24,10 @@ AVAILABLE_FIXTURES = [
     "geo.currency",
     "geo.continent",
     "geo.country",
+    "geo.country_data",
+    "geo.administrative_level_one",
+    "geo.administrative_level_two",
+    "geo.city_type",
 ]
 
 
