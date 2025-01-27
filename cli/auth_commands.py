@@ -10,6 +10,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from config import Settings
 from models.auth import Refresh, Session, Token
+from models.geo import Email
 from models.users import User
 from utils.crypt import (
     check_password,
@@ -29,11 +30,12 @@ def authenticate(email: str, password: str):
     async def _authenticate():
         await Tortoise.init(
             db_url=settings.db_url,
-            modules={"models": ["models.users", "models.auth"]},
+            modules={"models": ["models.users", "models.auth", "models.geo", "models.assets", "models.services", "models.operators"]},
         )
 
         try:
-            _user = await User.get(email=email)
+            _email = await Email.get(email=email)
+            _user = await User.get(email=_email)
 
             if not check_password(password, _user.password):
                 r_print(f"[bold red]Password[/bold red] [italic white]{password}[/italic white] [bold red]does not match![/bold red] :boom:")

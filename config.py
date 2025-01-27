@@ -1,3 +1,5 @@
+from typing import List
+
 from pydantic_settings import BaseSettings
 
 
@@ -10,6 +12,16 @@ class Settings(BaseSettings):
     db_name: str = "heracles"
     db_url: str = f"postgres://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
     debug: bool = True
+
+    models: List[str] = [
+        "users",
+        "auth",
+        "geo",
+        "assets",
+        "services",
+        "operators",
+        "agency",
+    ]
 
     class Config:
         env_file = ".env"
