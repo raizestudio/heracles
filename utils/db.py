@@ -18,7 +18,7 @@ class Database:
         register_tortoise(
             app,
             db_url=settings.db_url,
-            modules={"models": ["models.core", "models.users", "models.services", "models.assets", "models.auth", "models.geo", "models.operator", "models.agency"]},
+            modules={"models": ["models.core", "models.users", "models.services", "models.assets", "models.auth", "models.geo", "models.operators", "models.agency"]},
             generate_schemas=True,
             add_exception_handlers=True,
         )

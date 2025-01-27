@@ -66,6 +66,7 @@ class TopLevelDomain(Model):
 
 
 class Email(Model):
+    """Model for emails."""
 
     email = fields.CharField(pk=True, max_length=255, unique=True)
 

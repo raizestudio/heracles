@@ -8,6 +8,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 import signals.users
 from config import Settings
+from models.geo import Email
 from models.users import User
 from utils.crypt import hash_password
 
@@ -22,10 +23,11 @@ def createuser(username: str, password: str, email: str, first_name: str, last_n
     async def _create_user():
         await Tortoise.init(
             db_url=settings.db_url,
-            modules={"models": ["models.users"]},
+            modules={"models": ["models.users", "models.geo", "models.assets", "models.services", "models.operators"]},
         )
         password_hash = hash_password(password)
-        _user = await User.create(username=username, password=password_hash, email=email, first_name=first_name, last_name=last_name)
+        _email = await Email.create(email=email)
+        _user = await User.create(username=username, password=password_hash, email=_email, first_name=first_name, last_name=last_name)
         typer.echo(_user)
 
         await Tortoise.close_connections()
