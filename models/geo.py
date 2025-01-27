@@ -35,6 +35,41 @@ class Currency(Model):
         return self.code
 
 
+class CallingCode(Model):
+
+    id = fields.IntField(pk=True)
+    code = fields.CharField(max_length=5, unique=True)
+
+    country = fields.ForeignKeyField("models.Country", related_name="country_calling_code")
+
+    def __str__(self):
+        return self.code
+
+
+class PhoneNumber(Model):
+
+    id = fields.IntField(pk=True)
+    phone_number = fields.CharField(max_length=32, unique=True)
+
+    calling_code = fields.ForeignKeyField("models.CallingCode", related_name="calling_code")
+
+
+class TopLevelDomain(Model):
+
+    code = fields.CharField(pk=True, max_length=5, unique=True)
+    operator = fields.CharField(max_length=50, null=True)
+
+    country = fields.ForeignKeyField("models.Country", related_name="country_top_level_domain")
+
+    def __str__(self):
+        return self.domain
+
+
+class Email(Model):
+
+    email = fields.CharField(pk=True, max_length=255, unique=True)
+
+
 class Continent(Model):
     """Model for continents."""
 
@@ -95,6 +130,7 @@ class CountryData(Model):
 class AdministrativeLevelOne(Model):
     """Model for administrative level one."""
 
+    code = fields.CharField(pk=True, max_length=8, unique=True)
     name = fields.CharField(max_length=50, unique=True)
 
     country = fields.ForeignKeyField("models.Country", related_name="administrative_level_one_country")
@@ -106,6 +142,7 @@ class AdministrativeLevelOne(Model):
 class AdministrativeLevelTwo(Model):
     """Model for administrative level two."""
 
+    code = fields.CharField(pk=True, max_length=8, unique=True)
     name = fields.CharField(max_length=50, unique=True)
 
     administrative_level_one = fields.ForeignKeyField("models.AdministrativeLevelOne", related_name="administrative_level_two_administrative_level_one")
@@ -154,9 +191,8 @@ class Street(Model):
 
     name = fields.CharField(max_length=50, unique=True)
 
+    street_type = fields.ForeignKeyField("models.StreetType", related_name="street_type")
     city = fields.ForeignKeyField("models.City", related_name="city")
 
     def __str__(self):
         return self.name
-
-

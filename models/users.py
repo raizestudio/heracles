@@ -39,7 +39,6 @@ class User(Model):
     id = fields.UUIDField(pk=True)
     username = fields.CharField(max_length=50, unique=True)
     password = fields.CharField(max_length=128)
-    email = fields.CharField(max_length=100, unique=True)
     first_name = fields.CharField(max_length=50)
     last_name = fields.CharField(max_length=50)
     is_active = fields.BooleanField(default=True)
@@ -48,8 +47,27 @@ class User(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
+    phone_number = fields.ForeignKeyField("models.PhoneNumber", related_name="user_phone_numbers", null=True)
+    email = fields.ForeignKeyField("models.Email", related_name="user_emails", null=True)
+    assets = fields.ManyToManyField("models.Asset", related_name="user_assets")
+    service_requests = fields.ManyToManyField("models.ServiceRequest", related_name="user_service_requests")
+
     def __str__(self):
         return self.username
+
+
+class UserPreferences(Model):
+    """Model for user preferences."""
+
+    id = fields.IntField(pk=True)
+    language = fields.ForeignKeyField("models.Language", related_name="user_language", null=True)
+    currency = fields.ForeignKeyField("models.Currency", related_name="user_currency", null=True)
+    timezone = fields.CharField(max_length=50, null=True)
+
+    user = fields.OneToOneField("models.User", related_name="preferences")
+
+    def __str__(self):
+        return self.user.username
 
 
 class UserSecurity(Model):
