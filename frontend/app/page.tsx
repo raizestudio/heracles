@@ -1,21 +1,32 @@
+import Link from "next/link";
+
 import NavbarComponent from "@/app/components/navbar/NavbarComponent";
-import FooterComponent from "@/app/components/footer/FooterComponent";
+import FooterLanding from "@/app/components/footer/FooterLanding";
 
 export default function Home() {
   return (
     <>
       <NavbarComponent />
       <div className="w-screen h-[calc(100vh-3rem)] flex flex-col justify-center items-center grow bg-gray-100">
-        <h1 className="font-black text-2xl">Heracles</h1>
-        <span className="text-sm">L&apos;autre mais en mieux</span>
+        <div className="flex flex-col justify-center items-center gap-10">
+          <div className="flex flex-col justify-center items-center gap-4">
+            <h1 className="text-primary-100 font-black text-5xl">Heracles</h1>
+            <span className="text-gray-700 font-semibold">
+              Trouvez un expert pour votre diagnostic en quelques secondes.
+            </span>
+          </div>
+          <Link className="bg-gray-200 rounded p-3" href="/simulation">
+            <span className="text-sm">Faire une simulation</span>
+          </Link>
+        </div>
       </div>
-      <div className="w-screen h-screen flex flex-col justify-center items-center">
+      {/* <div className="w-screen h-screen flex flex-col justify-center items-center">
         <h1>Home</h1>
         <p>
           Heracles is a web application that allows you to manage your tasks.
         </p>
-      </div>
-      <FooterComponent />
+      </div> */}
+      <FooterLanding />
     </>
   );
 }

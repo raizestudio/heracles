@@ -74,6 +74,7 @@ class Session(Model):
     ip_v6 = fields.CharField(max_length=64, null=True)
     ip_type = fields.CharEnumField(IPTypeEnum, default=IPTypeEnum.UNKNOWN)
     ip_class = fields.CharEnumField(IPClassEnum, default=IPClassEnum.UNKNOWN)
+    isp = fields.CharField(max_length=255, null=True)
     os = fields.CharField(max_length=255, null=True)
     user_agent = fields.CharField(max_length=255, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
