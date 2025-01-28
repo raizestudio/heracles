@@ -21,6 +21,8 @@ app.include_router(auth.router, prefix="/auth", tags=["Auth"])
 try:
     os.makedirs("uploads")
     os.makedirs("uploads/avatars")
+    os.makedirs("uploads/documents")
+
 except FileExistsError:
     pass
 

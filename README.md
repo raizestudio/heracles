@@ -1,6 +1,6 @@
 # HERACLES
 
-Description placeholder.
+L'application qui simplifie la mise en relation entre les particulier et les experts en diagnostiques immobilier.
 
 ## Installation
 
