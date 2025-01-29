@@ -29,6 +29,11 @@ AVAILABLE_FIXTURES = [
     "geo.administrative_level_two",
     "geo.city_type",
     "geo.city",
+    "geo.street_type",
+    "geo.street",
+    "assets.asset_type",
+    "assets.asset",
+    "services.service_type",
 ]
 
 
@@ -126,6 +131,7 @@ def loadallfixtures(env: str = typer.Argument("prod")):
 
     async def _load_all_fixtures():
         for fixture in AVAILABLE_FIXTURES:
+            print(f"Loading fixture: {fixture}")
             app, model = fixture.split(".")
             await load_fixture(app, model, env)
 

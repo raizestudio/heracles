@@ -11,6 +11,9 @@ PUBLIC_ROUTES = [
     "/auth/authenticate",
     "/auth/authenticate/token",
     "/users",
+    "/services",
+    "/services/types",
+    "/services/types/EDL",
 ]
 app = FastAPI()
 

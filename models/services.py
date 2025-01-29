@@ -39,9 +39,10 @@ class Service(Model):
 
     id = fields.IntField(pk=True)
     name = fields.CharField(max_length=50, unique=True)
-    description = fields.TextField()
+    description = fields.TextField(null=True)
     is_active = fields.BooleanField(default=True)
 
+    service_type = fields.ForeignKeyField("models.ServiceType", related_name="service_types")
     available_assets = fields.ManyToManyField("models.Asset", related_name="service_assets")
 
     def __str__(self):

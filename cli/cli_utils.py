@@ -20,7 +20,7 @@ def format_fixture_name(string: str) -> str:
 async def load_fixture(app: str, model: str, env: str = "prod") -> None:
     await Tortoise.init(
         db_url=settings.db_url,
-        modules={"models": [f"models.{app}"]},
+        modules={"models": [f"models.{model}" for model in settings.models]},
     )
 
     await Tortoise.generate_schemas()
