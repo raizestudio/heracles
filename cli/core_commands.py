@@ -34,6 +34,7 @@ AVAILABLE_FIXTURES = [
     "assets.asset_type",
     "assets.asset",
     "services.service_type",
+    "services.service",
 ]
 
 
