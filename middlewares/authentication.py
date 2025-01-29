@@ -13,7 +13,7 @@ PUBLIC_ROUTES = [
     "/users",
     "/services",
     "/services/types",
-    "/services/types/EDL",
+    "/services/types/edl",
 ]
 app = FastAPI()
 
