@@ -34,7 +34,7 @@ class Asset(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     asset_type = fields.ForeignKeyField("models.AssetType", related_name="asset_type")
-    address = fields.ForeignKeyField("models.Street", related_name="street_address", null=True)
+    address = fields.ForeignKeyField("models.Address", related_name="asset_address", null=True)
 
     def __str__(self):
         return self.name

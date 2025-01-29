@@ -31,6 +31,8 @@ AVAILABLE_FIXTURES = [
     "geo.city",
     "geo.street_type",
     "geo.street",
+    "geo.address",
+    "geo.top_level_domain",
     "assets.asset_type",
     "assets.asset",
     "services.service_type",

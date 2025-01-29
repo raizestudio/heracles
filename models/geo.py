@@ -58,8 +58,12 @@ class TopLevelDomain(Model):
 
     code = fields.CharField(pk=True, max_length=5, unique=True)
     operator = fields.CharField(max_length=50, null=True)
+    idn = fields.BooleanField(default=False)
+    dnssec = fields.BooleanField(default=False)
+    sld = fields.BooleanField(default=False)
+    ipv6 = fields.BooleanField(default=False)
 
-    country = fields.ForeignKeyField("models.Country", related_name="country_top_level_domain")
+    country = fields.ForeignKeyField("models.Country", related_name="country_top_level_domain", null=True)
 
     def __str__(self):
         return self.domain
@@ -144,6 +148,7 @@ class AdministrativeLevelTwo(Model):
     """Model for administrative level two."""
 
     code = fields.CharField(pk=True, max_length=8, unique=True)
+    numeric_code = fields.IntField(null=True)
     name = fields.CharField(max_length=50, unique=True)
 
     administrative_level_one = fields.ForeignKeyField("models.AdministrativeLevelOne", related_name="administrative_level_two_administrative_level_one")
@@ -169,6 +174,8 @@ class City(Model):
     """Model for cities."""
 
     name = fields.CharField(max_length=50, unique=True)
+    postal_code = fields.CharField(max_length=10, null=True)
+    insee_code = fields.CharField(max_length=10, null=True)
 
     city_type = fields.ForeignKeyField("models.CityType", related_name="city_type")
     administrative_level_one = fields.ForeignKeyField("models.AdministrativeLevelOne", related_name="administrative_level_one", null=True)
@@ -182,6 +189,7 @@ class StreetType(Model):
 
     code = fields.CharField(pk=True, max_length=10, unique=True)
     name = fields.CharField(max_length=50, unique=True)
+    short_name = fields.CharField(max_length=10, null=True)
 
     def __str__(self):
         return self.name
@@ -197,3 +205,18 @@ class Street(Model):
 
     def __str__(self):
         return self.name
+
+
+class Address(Model):
+    """Model for addresses."""
+
+    number = fields.CharField(max_length=10)
+    number_extension = fields.CharField(max_length=10, null=True)
+    complement = fields.CharField(max_length=50, null=True)
+    latitude = fields.FloatField(null=True)
+    longitude = fields.FloatField(null=True)
+
+    street = fields.ForeignKeyField("models.Street", related_name="street", null=True)
+
+    def __str__(self):
+        return f"{self.number} {self.street.name}"

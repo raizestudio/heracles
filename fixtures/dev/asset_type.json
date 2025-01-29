@@ -1,5 +1,9 @@
 [
   {
+    "code": "APPARTEMENT",
+    "name": "Appartement"
+  },
+  {
     "code": "MAISON",
     "name": "Maison"
   }

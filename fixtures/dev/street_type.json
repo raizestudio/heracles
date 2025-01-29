@@ -13,7 +13,8 @@
   },
   {
     "code": "BOULEVARD",
-    "name": "Boulevard"
+    "name": "Boulevard",
+    "short_name": "Bd"
   },
   {
     "code": "CARREFOUR",
