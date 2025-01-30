@@ -2,9 +2,13 @@ import jwt
 from fastapi import APIRouter, HTTPException, status
 from fastapi.encoders import jsonable_encoder
 
-from models.auth import Token
+from models.auth import Session, Token
 from models.users import User
-from schemas.auth import AuthenticationSchema, AuthenticationTokenSchema
+from schemas.auth import (
+    AuthenticationSchema,
+    AuthenticationTokenSchema,
+    SessionUserlessCreateSchema,
+)
 from schemas.users import UserCreate, UserRead
 from utils.crypt import check_password, generate_token, hash_password
 
@@ -50,3 +54,13 @@ async def authenticate_token_user(authentication: AuthenticationTokenSchema):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token match not found")
 
     return {"message": "User authenticated successfully", "user": user_data, "token": _token.token}
+
+
+@router.post("/session")
+async def create_session(session: SessionUserlessCreateSchema):
+    if session.token:
+        _token = await Token.get(token=session.token).prefetch_related("user")
+        user_data = UserRead.model_validate(_token.user)
+
+    _session = await Session.create(ip_v4=session.ip_v4, ip_v6=session.ip_v6)
+    return {"message": "Session created successfully", "session": _session}

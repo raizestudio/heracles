@@ -42,7 +42,6 @@ class Asset(Model):
     total_rooms = fields.IntField()
     latitude = fields.CharField(max_length=50)
     longitude = fields.CharField(max_length=50)
-    image = fields.CharField(max_length=255, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 

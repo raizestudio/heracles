@@ -10,6 +10,7 @@ PUBLIC_ROUTES = [
     "/",
     "/auth/authenticate",
     "/auth/authenticate/token",
+    "/auth/session",
     "/users",
     "/services",
     "/services/types",

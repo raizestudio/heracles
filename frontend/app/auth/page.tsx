@@ -9,6 +9,8 @@ const AuthPage = () => {
   const [currentView, setCurrentView] = useState("login");
   const [isLoading, setIsLoading] = useState(false);
 
+  
+
   return (
     <div className="h-[calc(100vh-5rem)] flex justify-center items-center grow">
       <div className="flex flex-col bg-gray-100 w-5/6 min-h-3/4 md:w-2/4 lg:w-3/5 xl:w-2/5 rounded p-4">

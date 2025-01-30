@@ -1,8 +1,34 @@
+"use client";
+import React, { useEffect } from "react";
+
+// Stores
+import useUserStore from "@/app/stores/userStore";
 interface FooterLandingProps {
   t?: string;
 }
 
 const FooterLanding: React.FC<FooterLandingProps> = () => {
+  const { session, setSession } = useUserStore();
+
+  useEffect(() => {
+    fetch("https://freeipapi.com/api/json")
+    .then((response) => response.json())
+    .then((data) => {
+      fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          ip_v4: data.ipAddress
+        }),
+      })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log(data.session);
+        setSession(data.session);
+        console.log(session);
+      })
+    });
+  }, []);
   return (
     <footer className="flex bg-gray-50 p-4 shadow">
       <div className="flex flex-col">
@@ -19,7 +45,7 @@ const FooterLanding: React.FC<FooterLandingProps> = () => {
           <span className="text-sm">Qui sommes nous</span>
         </div>
         <div className="flex justify-end">
-          <span className="text-xs">08f6f739-f9d0-4bc3-ba82-270bca8dfc8b</span>
+          <span className="text-xs text-gray-700">{ session?.id }</span>
         </div>
       </div>
     </footer>

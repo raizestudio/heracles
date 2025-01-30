@@ -1,4 +1,6 @@
-from pydantic import BaseModel
+from typing import Optional
+
+from pydantic import BaseModel, Field
 
 
 class AuthenticationSchema(BaseModel):
@@ -8,3 +10,12 @@ class AuthenticationSchema(BaseModel):
 
 class AuthenticationTokenSchema(BaseModel):
     token: str
+
+
+class SessionUserlessCreateSchema(BaseModel):
+    """Schema for creating a session without a user."""
+
+    ip_v4: Optional[str] = Field(None, description="IPv4 address")
+    ip_v6: Optional[str] = Field(None, description="IPv6 address")
+
+    token: Optional[str] = Field(None, description="Token")
