@@ -16,6 +16,15 @@ class ServiceRequestStatusEnum(Enum):
     CANCELLED = "cancelled"
 
 
+class ServiceEligibilityEnum(Enum):
+    """Enum for service eligibility."""
+
+    TYPE = "type"
+    TIME_ASSET = "time_asset"
+    TIME_INSTALL = "time_install"
+    ZONE = "zone"
+
+
 class ServiceType(Model):
     """Model for service types."""
 
@@ -41,6 +50,9 @@ class Service(Model):
     name = fields.CharField(max_length=50, unique=True)
     description = fields.TextField(null=True)
     is_active = fields.BooleanField(default=True)
+    eligibility = fields.CharEnumField(ServiceEligibilityEnum, null=True)
+    validity_months = fields.IntField(null=True)
+    icon = fields.CharField(max_length=255, null=True)
 
     service_type = fields.ForeignKeyField("models.ServiceType", related_name="service_types")
     available_assets = fields.ManyToManyField("models.Asset", related_name="service_assets")

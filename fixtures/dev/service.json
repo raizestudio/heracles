@@ -2,7 +2,63 @@
   {
     "id": 1,
     "name": "État des lieux",
-    "description": "",
-    "service_type": "edl"
+    "service_type": "EDL"
+  },
+  {
+    "id": 2,
+    "name": "Performance énergétique",
+    "validity_months": 120,
+    "service_type": "DIAG"
+  },
+  {
+    "id": 3,
+    "name": "Métrage loi Carrez",
+    "eligibility": "type",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 4,
+    "name": "État d'installation d'assainissement non collectif",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 5,
+    "name": "Amiante",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 6,
+    "name": "Constat des Risques d'Exposition au Plomb",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 7,
+    "name": "Installation intérieure de gaz",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 8,
+    "name": "Installation intérieure d'électricité",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 9,
+    "name": "État relatif à la présence de termites",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 10,
+    "name": "État des Risques et Pollutions",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 11,
+    "name": "Plan d'exposition au Bruit",
+    "service_type": "DIAG"
+  },
+  {
+    "id": 12,
+    "name": "Mérule",
+    "service_type": "DIAG"
   }
 ]

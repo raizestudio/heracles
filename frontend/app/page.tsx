@@ -15,8 +15,8 @@ export default function Home() {
               Trouvez un expert pour votre diagnostic en quelques secondes.
             </span>
           </div>
-          <Link className="bg-gray-200 rounded p-3" href="/simulation">
-            <span className="text-sm">Faire une simulation</span>
+          <Link className="bg-gray-50 rounded p-3 shadow-sm hover:shadow" href="/simulation">
+            <span className="text-sm text-gray-800">Faire une simulation</span>
           </Link>
         </div>
       </div>

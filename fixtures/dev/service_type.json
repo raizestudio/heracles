@@ -1,6 +1,10 @@
 [
   {
-    "code": "edl",
+    "code": "EDL",
     "name": "État des lieux"
+  },
+  {
+    "code": "DIAG",
+    "name": "Diagnostic"
   }
 ]

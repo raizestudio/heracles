@@ -14,6 +14,18 @@ class AssetType(Model):
         return self.name
 
 
+class AssetPhotos(Model):
+    """Model for asset photos."""
+
+    id = fields.UUIDField(pk=True)
+    image = fields.CharField(max_length=255)
+    is_cover = fields.BooleanField(default=False)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.image
+
+
 class AssetManager(Manager):
     """Manager for Asset model."""
 
@@ -30,10 +42,12 @@ class Asset(Model):
     total_rooms = fields.IntField()
     latitude = fields.CharField(max_length=50)
     longitude = fields.CharField(max_length=50)
+    image = fields.CharField(max_length=255, null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
     asset_type = fields.ForeignKeyField("models.AssetType", related_name="asset_type")
+    asset_photos = fields.ManyToManyField("models.AssetPhotos", related_name="asset_photos")
     address = fields.ForeignKeyField("models.Address", related_name="asset_address", null=True)
 
     def __str__(self):
