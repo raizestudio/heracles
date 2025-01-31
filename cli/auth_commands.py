@@ -30,7 +30,16 @@ def authenticate(email: str, password: str):
     async def _authenticate():
         await Tortoise.init(
             db_url=settings.db_url,
-            modules={"models": ["models.users", "models.auth", "models.geo", "models.assets", "models.services", "models.operators"]},
+            modules={
+                "models": [
+                    "models.users",
+                    "models.auth",
+                    "models.geo",
+                    "models.assets",
+                    "models.services",
+                    "models.operators",
+                ]
+            },
         )
 
         try:
@@ -38,41 +47,65 @@ def authenticate(email: str, password: str):
             _user = await User.get(email=_email)
 
             if not check_password(password, _user.password):
-                r_print(f"[bold red]Password[/bold red] [italic white]{password}[/italic white] [bold red]does not match![/bold red] :boom:")
+                r_print(
+                    f"[bold red]Password[/bold red] [italic white]{password}[/italic white] [bold red]does not match![/bold red] :boom:"
+                )
 
                 return
 
             try:
-                _session = await Session.get(user=_user).prefetch_related("token", "refresh")
+                _session = await Session.get(user=_user).prefetch_related(
+                    "token", "refresh"
+                )
 
                 generated_token = generate_token(email)
                 generated_refresh_token = generate_refresh_token()
 
                 _token = await Token.create(token=generated_token, user=_user)
-                _refresh = await Refresh.create(token=generated_refresh_token, user=_user)
+                _refresh = await Refresh.create(
+                    token=generated_refresh_token, user=_user
+                )
 
                 _session.token = _token
                 _session.refresh = _refresh
                 await _session.save()
 
-                r_print(f"[bold]Generated jwt token[/bold] [bold gray]->[/bold gray] [blue]{generated_token}[/blue]")
-                r_print(f"[bold]Generated refresh token[/bold] [bold gray]->[/bold gray] [blue]{generated_refresh_token}[/blue]")
-                r_print(f"[bold]Updated session [/bold] [bold gray]->[/bold gray] [blue]{_session}[/blue]")
+                r_print(
+                    f"[bold]Generated jwt token[/bold] [bold gray]->[/bold gray] [blue]{generated_token}[/blue]"
+                )
+                r_print(
+                    f"[bold]Generated refresh token[/bold] [bold gray]->[/bold gray] [blue]{generated_refresh_token}[/blue]"
+                )
+                r_print(
+                    f"[bold]Updated session [/bold] [bold gray]->[/bold gray] [blue]{_session}[/blue]"
+                )
 
             except DoesNotExist:
                 generated_token = generate_token(email)
                 generated_refresh_token = generate_refresh_token()
 
                 _token = await Token.create(token=generated_token, user=_user)
-                _refresh = await Refresh.create(token=generated_refresh_token, user=_user)
-                _session = await Session.create(token=_token, refresh=_refresh, user=_user)
+                _refresh = await Refresh.create(
+                    token=generated_refresh_token, user=_user
+                )
+                _session = await Session.create(
+                    token=_token, refresh=_refresh, user=_user
+                )
 
-                r_print(f"[bold]Generated jwt token[/bold] [bold gray]->[/bold gray] [blue]{generated_token}[/blue]")
-                r_print(f"[bold]Generated refresh token[/bold] [bold gray]->[/bold gray] [blue]{generated_refresh_token}[/blue]")
-                r_print(f"[bold]Generated session [/bold] [bold gray]->[/bold gray] [blue]{_session}[/blue]")
+                r_print(
+                    f"[bold]Generated jwt token[/bold] [bold gray]->[/bold gray] [blue]{generated_token}[/blue]"
+                )
+                r_print(
+                    f"[bold]Generated refresh token[/bold] [bold gray]->[/bold gray] [blue]{generated_refresh_token}[/blue]"
+                )
+                r_print(
+                    f"[bold]Generated session [/bold] [bold gray]->[/bold gray] [blue]{_session}[/blue]"
+                )
 
         except DoesNotExist:
-            r_print(f"[bold red]User[/bold red] [italic white]{email}[/italic white] [bold red]match does not exist![/bold red] :boom:")
+            r_print(
+                f"[bold red]User[/bold red] [italic white]{email}[/italic white] [bold red]match does not exist![/bold red] :boom:"
+            )
 
         await Tortoise.close_connections()
 
@@ -99,7 +132,9 @@ def authenticatetoken(token: str, refresh: str):
             _user = await User.get(email=decoded_result["email"])
             _session = await Session.get(user=_user)
 
-            r_print(f"Session {_session} is valid, the user [italic]{_user}[/italic] is autheticated.")
+            r_print(
+                f"Session {_session} is valid, the user [italic]{_user}[/italic] is autheticated."
+            )
 
         elif "error" in decoded_result:
             if decoded_result["error"] == "expired":
@@ -109,13 +144,19 @@ def authenticatetoken(token: str, refresh: str):
 
                     if _refresh.is_valid():
                         generated_token = generate_token(user_email=_refresh.user.email)
-                        _token = await Token.create(token=generated_token, user=_refresh.user)
+                        _token = await Token.create(
+                            token=generated_token, user=_refresh.user
+                        )
 
                         _session.token = _token
                         await _session.save()
 
-                        r_print(f"[bold]Generated jwt token[/bold] [bold gray]->[/bold gray] [blue]{generated_token}[/blue]")
-                        r_print(f"[bold]Generated session [/bold] [bold gray]->[/bold gray] [blue]{_session}[/blue]")
+                        r_print(
+                            f"[bold]Generated jwt token[/bold] [bold gray]->[/bold gray] [blue]{generated_token}[/blue]"
+                        )
+                        r_print(
+                            f"[bold]Generated session [/bold] [bold gray]->[/bold gray] [blue]{_session}[/blue]"
+                        )
 
                 except DoesNotExist:
                     pass

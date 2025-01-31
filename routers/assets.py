@@ -29,5 +29,12 @@ async def get_asset(asset: str):
 async def create_asset(asset: AssetCreate):
     _asset_type = await AssetType.get(code=asset.asset_type)
     _address = await Address.get(id=asset.address)
-    _asset = await Asset.create(area=asset.area, total_rooms=asset.total_rooms, latitude=asset.latitude, longitude=asset.longitude, asset_type=_asset_type, address=_address)
+    _asset = await Asset.create(
+        area=asset.area,
+        total_rooms=asset.total_rooms,
+        latitude=asset.latitude,
+        longitude=asset.longitude,
+        asset_type=_asset_type,
+        address=_address,
+    )
     return _asset

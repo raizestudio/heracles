@@ -92,7 +92,9 @@ class Session(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     token = fields.ForeignKeyField("models.Token", related_name="tokens", null=True)
-    refresh = fields.ForeignKeyField("models.Refresh", related_name="refresh_tokens", null=True)
+    refresh = fields.ForeignKeyField(
+        "models.Refresh", related_name="refresh_tokens", null=True
+    )
     user = fields.ForeignKeyField("models.User", related_name="users", null=True)
 
     def __str__(self):

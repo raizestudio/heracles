@@ -89,7 +89,9 @@ def getmenu(name: str):
             console.print(table)
 
         except DoesNotExist:
-            r_print(f"[bold red]Menu[/bold red] [italic white]{name}[/italic white] [bold red]match does not exist![/bold red] :boom:")
+            r_print(
+                f"[bold red]Menu[/bold red] [italic white]{name}[/italic white] [bold red]match does not exist![/bold red] :boom:"
+            )
 
         await Tortoise.close_connections()
 
@@ -103,7 +105,16 @@ def resetdb():
     async def _reset_db():
         await Tortoise.init(
             db_url=settings.db_url,
-            modules={"models": ["models.core", "models.users", "models.services", "models.assets", "models.auth", "models.geo"]},
+            modules={
+                "models": [
+                    "models.core",
+                    "models.users",
+                    "models.services",
+                    "models.assets",
+                    "models.auth",
+                    "models.geo",
+                ]
+            },
         )
         await Menu.all().delete()
         await Continent.all().delete()

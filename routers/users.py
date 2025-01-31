@@ -23,7 +23,9 @@ async def get_users():
 async def get_user(user_id: int):
     _user: UserRead = await User.get(id=user_id)
     if not _user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     return _user
 
 
@@ -33,10 +35,19 @@ async def get_user(user_id: int):
 )
 async def create_user(user: UserCreate):
     try:
-        new_user = await User.create(username=user.username, password=user.password, email=user.email, first_name=user.first_name, last_name=user.last_name)
+        new_user = await User.create(
+            username=user.username,
+            password=user.password,
+            email=user.email,
+            first_name=user.first_name,
+            last_name=user.last_name,
+        )
         return {"message": "User created successfully", "user": new_user}
     except IntegrityError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User with this email or username already exists")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User with this email or username already exists",
+        )
 
 
 @router.put(
@@ -46,8 +57,16 @@ async def create_user(user: UserCreate):
 async def update_user(user_id: int, user: UserCreate):
     _user: UserRead = await User.get(id=user_id)
     if not _user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    await _user.update(username=user.username, password=user.password, email=user.email, first_name=user.first_name, last_name=user.last_name)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    await _user.update(
+        username=user.username,
+        password=user.password,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+    )
     return {"message": "User updated successfully", "user": _user}
 
 
@@ -58,8 +77,16 @@ async def update_user(user_id: int, user: UserCreate):
 async def patch_user(user_id: int, user: UserCreate):
     _user: UserRead = await User.get(id=user_id)
     if not _user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-    await _user.update(username=user.username, password=user.password, email=user.email, first_name=user.first_name, last_name=user.last_name)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
+    await _user.update(
+        username=user.username,
+        password=user.password,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+    )
     return {"message": "User updated successfully", "user": _user}
 
 
@@ -70,7 +97,9 @@ async def patch_user(user_id: int, user: UserCreate):
 async def delete_user(user_id: int):
     _user: UserRead = await User.get(id=user_id)
     if not _user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
     await _user.delete()
     return {"message": "User deleted successfully", "user": _user}
 
@@ -82,7 +111,9 @@ async def upload_avatar(user_id: int, file: UploadFile = File(...)):
     """
     # Validate the file type (optional)
     if file.content_type not in ["image/jpeg", "image/png"]:
-        raise HTTPException(status_code=400, detail="Invalid file type. Only JPEG or PNG allowed.")
+        raise HTTPException(
+            status_code=400, detail="Invalid file type. Only JPEG or PNG allowed."
+        )
 
     try:
         user = await User.get(id=user_id)

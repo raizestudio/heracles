@@ -24,9 +24,18 @@ router = APIRouter()
 )
 async def register_user(user: UserCreate):
     encrypted_password = hash_password(user.password)
-    _, created = await User.get_or_create(username=user.username, password=encrypted_password, email=user.email, first_name=user.first_name, last_name=user.last_name)
+    _, created = await User.get_or_create(
+        username=user.username,
+        password=encrypted_password,
+        email=user.email,
+        first_name=user.first_name,
+        last_name=user.last_name,
+    )
     if not created:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User with this email or username already exists")
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User with this email or username already exists",
+        )
 
     return {"message": "User created successfully", "user": created}
 
@@ -37,10 +46,14 @@ async def authenticate_user(authentication: AuthenticationSchema):
     token = generate_token(_user.email)
     _token = await Token.create(token=token, user=_user)
     if not _user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
+        )
 
     if not check_password(authentication.password, _user.password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
+        )
 
     return {"message": "User authenticated successfully", "user": _user, "token": token}
 
@@ -51,9 +64,15 @@ async def authenticate_token_user(authentication: AuthenticationTokenSchema):
     user_data = UserRead.model_validate(_token.user)
 
     if not _token:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token match not found")
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Token match not found"
+        )
 
-    return {"message": "User authenticated successfully", "user": user_data, "token": _token.token}
+    return {
+        "message": "User authenticated successfully",
+        "user": user_data,
+        "token": _token.token,
+    }
 
 
 @router.post("/session")

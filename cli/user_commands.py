@@ -17,17 +17,33 @@ settings = Settings()
 
 
 @app.command()
-def createuser(username: str, password: str, email: str, first_name: str, last_name: str, role: str):
+def createuser(
+    username: str, password: str, email: str, first_name: str, last_name: str, role: str
+):
     """Create user"""
 
     async def _create_user():
         await Tortoise.init(
             db_url=settings.db_url,
-            modules={"models": ["models.users", "models.geo", "models.assets", "models.services", "models.operators"]},
+            modules={
+                "models": [
+                    "models.users",
+                    "models.geo",
+                    "models.assets",
+                    "models.services",
+                    "models.operators",
+                ]
+            },
         )
         password_hash = hash_password(password)
         _email = await Email.create(email=email)
-        _user = await User.create(username=username, password=password_hash, email=_email, first_name=first_name, last_name=last_name)
+        _user = await User.create(
+            username=username,
+            password=password_hash,
+            email=_email,
+            first_name=first_name,
+            last_name=last_name,
+        )
         typer.echo(_user)
 
         await Tortoise.close_connections()

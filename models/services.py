@@ -54,8 +54,12 @@ class Service(Model):
     validity_months = fields.IntField(null=True)
     icon = fields.CharField(max_length=255, null=True)
 
-    service_type = fields.ForeignKeyField("models.ServiceType", related_name="service_types")
-    available_assets = fields.ManyToManyField("models.Asset", related_name="service_assets")
+    service_type = fields.ForeignKeyField(
+        "models.ServiceType", related_name="service_types"
+    )
+    available_assets = fields.ManyToManyField(
+        "models.Asset", related_name="service_assets"
+    )
 
     def __str__(self):
         return self.name
@@ -66,9 +70,15 @@ class ServiceRequestEntity(Model):
 
     id = fields.IntField(pk=True)
 
-    service = fields.ForeignKeyField("models.Service", related_name="service_request_entities")
-    asset = fields.ForeignKeyField("models.Asset", related_name="service_request_entities")
-    operator = fields.ForeignKeyField("models.Operator", related_name="service_request_entities")
+    service = fields.ForeignKeyField(
+        "models.Service", related_name="service_request_entities"
+    )
+    asset = fields.ForeignKeyField(
+        "models.Asset", related_name="service_request_entities"
+    )
+    operator = fields.ForeignKeyField(
+        "models.Operator", related_name="service_request_entities"
+    )
 
     def __str__(self):
         return self.id
@@ -78,11 +88,15 @@ class ServiceRequest(Model):
     """Model for service requests."""
 
     id = fields.UUIDField(pk=True)
-    status = fields.CharEnumField(ServiceRequestStatusEnum, default=ServiceRequestStatusEnum.DRAFT)
+    status = fields.CharEnumField(
+        ServiceRequestStatusEnum, default=ServiceRequestStatusEnum.DRAFT
+    )
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-    service_request_entities = fields.ManyToManyField("models.ServiceRequestEntity", related_name="service_request_entities")
+    service_request_entities = fields.ManyToManyField(
+        "models.ServiceRequestEntity", related_name="service_request_entities"
+    )
 
     def __str__(self):
         return self.id
