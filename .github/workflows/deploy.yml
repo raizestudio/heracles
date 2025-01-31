@@ -26,6 +26,8 @@ jobs:
       # Test SSH connection
       - name: Test SSH connection
         run: |
+          echo "EC2_USER: $EC2_USER"
+          echo "EC2_HOST: $EC2_HOST"
           ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "echo Connected!"
         env:
           EC2_USER: ${{ secrets.EC2_USER }}
