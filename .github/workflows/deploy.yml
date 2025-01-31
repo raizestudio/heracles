@@ -37,15 +37,16 @@ jobs:
       # Install dependencies (if needed)
       - name: Install dependencies on the server
         run: |
-          ssh $EC2_USER@$EC2_HOST << 'EOF'
-            cd /srv
-            git pull origin main  # Pull latest changes
-            python3.13 -m venv venv
-            source ./venv/bin/activate  # Activate virtualenv if needed
-            pip install -r requirements.txt  # Install Python dependencies
-            # Other deployment commands like migrating DB, etc.
-            sudo systemctl restart heracles_api  # Restart service if needed
-          EOF
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "
+            cd /path/to/your/project && \
+            git pull origin main && \
+            source /path/to/venv/bin/activate && \
+            pip install -r requirements.txt && \
+            sudo systemctl restart fastapi-app
+          "
+        env:
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_HOST: ${{ secrets.EC2_HOST }}
 
       # (Optional) Deploy static files or handle specific tasks
 
