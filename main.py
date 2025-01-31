@@ -10,7 +10,7 @@ from middlewares.authentication import jwt_auth_middleware
 from routers import assets, auth, core, geo, services, users
 from utils.db import Database
 
-app = FastAPI()
+app = FastAPI(title=Settings().app_name, version=Settings().app_version)
 
 # app.middleware("http")(jwt_auth_middleware)
 
