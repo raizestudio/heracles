@@ -43,15 +43,6 @@ npm i --force
 npm run dev
 ```
 
-## Usage
-
-Provide instructions and examples for using your project.
-
-```bash
-# Example command
-npm start
-```
-
 ## Contributing
 
 1. Fork the repository
