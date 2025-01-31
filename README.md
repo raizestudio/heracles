@@ -4,6 +4,7 @@ L'application qui simplifie la mise en relation entre les particulier et les exp
 
 ## Installation
 
+### Backend
 ```bash
 # Clone the repository
 git clone https://github.com/raizestudio/heracles.git
@@ -30,6 +31,18 @@ cp .env.example .env
 uvicorn main:app --reload
 ```
 
+### Frontend
+```bash
+# Navigate to the frontend directory
+cd frontend
+
+# Install dependencies
+npm i --force
+
+# Start App
+npm run dev
+```
+
 ## Usage
 
 Provide instructions and examples for using your project.
@@ -43,7 +56,7 @@ npm start
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/fooBar`)
-3. Commit your changes (`git commit -am 'Add some fooBar'`)
+3. Commit your changes (`git commit -m 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Open a Pull Request
 
