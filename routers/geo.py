@@ -1,21 +1,35 @@
 from fastapi import APIRouter
 
 from models.geo import (
+    Address,
+    AdministrativeLevelOne,
+    AdministrativeLevelTwo,
     CallingCode,
+    City,
+    CityType,
     Continent,
     Country,
     Currency,
     Language,
     PhoneNumber,
+    Street,
+    StreetType,
     TopLevelDomain,
 )
 from schemas.geo import (
+    AddressCreate,
+    AdministrativeLevelOneCreate,
+    AdministrativeLevelTwoCreate,
     CallingCodeCreate,
+    CityCreate,
+    CityTypeCreate,
     ContinentCreate,
     CountryCreate,
     CurrencyCreate,
     LanguageCreate,
     PhoneNumberCreate,
+    StreetCreate,
+    StreetTypeCreate,
     TopLevelDomainCreate,
 )
 
@@ -174,3 +188,151 @@ async def create_country(country: CountryCreate):
         currency=_currency,
     )
     return _country
+
+
+@router.get("/administrative-levels-one")
+async def get_administrative_levels_one():
+    _administrative_levels_one = await AdministrativeLevelOne.all()
+    return _administrative_levels_one
+
+
+@router.get("/administrative-levels-one/{administrative_level_one}")
+async def get_administrative_level_one(administrative_level_one: str):
+    _administrative_level_one = await AdministrativeLevelOne.get(code=administrative_level_one)
+    return _administrative_level_one
+
+
+@router.post("/administrative-levels-one")
+async def create_administrative_level_one(administrative_level_one: AdministrativeLevelOneCreate):
+    _country = await Country.get(code_iso2=administrative_level_one.country)
+    _administrative_level_one = await AdministrativeLevelOne.create(code=administrative_level_one.code, name=administrative_level_one.name, country=_country)
+    return _administrative_level_one
+
+
+@router.get("/administrative-levels-two")
+async def get_administrative_levels_two():
+    _administrative_levels_two = await AdministrativeLevelTwo.all()
+    return _administrative_levels_two
+
+
+@router.get("/administrative-levels-two/{administrative_level_two}")
+async def get_administrative_level_two(administrative_level_two: str):
+    _administrative_level_two = await AdministrativeLevelTwo.get(code=administrative_level_two)
+    return _administrative_level_two
+
+
+@router.post("/administrative-levels-two")
+async def create_administrative_level_two(administrative_level_two: AdministrativeLevelTwoCreate):
+    _administrative_level_one = await AdministrativeLevelOne.get(code=administrative_level_two.administrative_level_one)
+    _administrative_level_two = await AdministrativeLevelTwo.create(
+        code=administrative_level_two.code, name=administrative_level_two.name, administrative_level_one=_administrative_level_one
+    )
+    return _administrative_level_two
+
+
+@router.get("/city-types")
+async def get_city_types():
+    _city_types = await CityType.all()
+    return _city_types
+
+
+@router.get("/city-types/{city_type}")
+async def get_city_type(city_type: str):
+    _city_type = await CityType.get(code=city_type)
+    return _city_type
+
+
+@router.post("/city-types")
+async def create_city_type(city_type: CityTypeCreate):
+    _city_type = await CityType.create(
+        code=city_type.code,
+        name=city_type.name,
+        description=city_type.description,
+        population_min=city_type.population_min,
+        population_max=city_type.population_max,
+    )
+    return _city_type
+
+
+@router.get("/cities")
+async def get_cities():
+    _cities = await City.all()
+    return _cities
+
+
+@router.get("/cities/{city}")
+async def get_city(city: str):
+    _city = await City.get(id=city)
+    return _city
+
+
+@router.post("/cities")
+async def create_city(city: CityCreate):
+    _city_type = await CityType.get(code=city.city_type)
+    _administrative_level_one = await AdministrativeLevelOne.get(code=city.administrative_level_one)
+    _administrative_level_two = await AdministrativeLevelTwo.get(code=city.administrative_level_two)
+    _city = await City.create(
+        name=city.name,
+        postal_code=city.postal_code,
+        insee_code=city.insee_code,
+        city_type=_city_type,
+        administrative_level_one=_administrative_level_one,
+        administrative_level_two=_administrative_level_two,
+    )
+    return _city
+
+
+@router.get("/street-types")
+async def get_street_types():
+    _street_types = await StreetType.all()
+    return _street_types
+
+
+@router.get("/street-types/{street_type}")
+async def get_street_type(street_type: str):
+    _street_type = await StreetType.get(code=street_type)
+    return _street_type
+
+
+@router.post("/street-types")
+async def create_street_type(street_type: StreetTypeCreate):
+    _street_type = await StreetType.create(code=street_type.code, name=street_type.name, short_name=street_type.short_name)
+    return _street_type
+
+
+@router.get("/streets")
+async def get_streets():
+    _streets = await Street.all()
+    return _streets
+
+
+@router.get("/streets/{street}")
+async def get_street(street: str):
+    _street = await Street.get(id=street)
+    return _street
+
+
+@router.post("/streets")
+async def create_street(street: StreetCreate):
+    _street_type = await StreetType.get(code=street.street_type)
+    _city = await City.get(name=street.city)
+    _street = await Street.create(name=street.name, street_type=_street_type, city=_city)
+    return _street
+
+
+@router.get("/addresses")
+async def get_addresses():
+    _addresses = await Address.all()
+    return _addresses
+
+
+@router.get("/addresses/{address}")
+async def get_address(address: str):
+    _address = await Address.get(id=address)
+    return _address
+
+
+@router.post("/addresses")
+async def create_address(address: AddressCreate):
+    _address = await Address.create()
+    return _address

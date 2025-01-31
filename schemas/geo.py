@@ -65,3 +65,73 @@ class CountryCreate(BaseModel):
     language_official: str = Field(..., description="Official language of the country.")
     continent: str = Field(..., description="Continent of the country.")
     currency: str = Field(..., description="Currency of the country.")
+
+
+class AdministrativeLevelOneCreate(BaseModel):
+    """Schema for creating an administrative level one."""
+
+    code: str = Field(..., description="Code of the administrative level one.")
+    name: str = Field(..., description="Name of the administrative level one.")
+
+    country: str = Field(..., description="Country of the administrative level one.")
+
+
+class AdministrativeLevelTwoCreate(BaseModel):
+    """Schema for creating an administrative level two."""
+
+    code: str = Field(..., description="Code of the administrative level two.")
+    numeric_code: int = Field(..., description="Numeric code of the administrative level two.")
+    name: str = Field(..., description="Name of the administrative level two.")
+
+    administrative_level_one: str = Field(..., description="Administrative level one of the administrative level two.")
+
+
+class CityTypeCreate(BaseModel):
+    """Schema for creating a city type."""
+
+    code: str = Field(..., description="Code of the city type.")
+    name: str = Field(..., description="Name of the city type.")
+    description: str = Field(None, description="Description of the city type.")
+    population_min: int = Field(None, description="Minimum population of the city type.")
+    population_max: int = Field(None, description="Maximum population of the city type.")
+
+
+class CityCreate(BaseModel):
+    """Schema for creating a city"""
+
+    name: str = Field(..., description="Name of the city.")
+    postal_code: str = Field(..., description="Postal code of the city.")
+    insee_code: str = Field(None, description="INSEE code of the city.")
+
+    city_type: str = Field(..., description="Type of the city.")
+    administrative_level_one: str = Field(..., description="Administrative level one of the city.")
+    administrative_level_two: str = Field(..., description="Administrative level two of the city.")
+
+
+class StreetTypeCreate(BaseModel):
+    """Schema for creating a street type."""
+
+    code: str = Field(..., description="Code of the street type.")
+    name: str = Field(..., description="Name of the street type.")
+    short_name: str = Field(None, description="Short name of the street type.")
+
+
+class StreetCreate(BaseModel):
+    """Schema for creating a street."""
+
+    name: str = Field(..., description="Name of the street.")
+
+    street_type: str = Field(..., description="Type of the street.")
+    city: str = Field(..., description="City of the street.")
+
+
+class AddressCreate(BaseModel):
+    """Schema for creating an address."""
+
+    number: str = Field(..., description="Number of the address.")
+    number_extension: str = Field(None, description="Number extension of the address.")
+    complement: str = Field(None, description="Complement of the address.")
+    latitude: str = Field(None, description="Latitude of the address.")
+    longitude: str = Field(None, description="Longitude of the address.")
+
+    street: str = Field(..., description="Street of the address.")
