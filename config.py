@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     app_name: str = "Heracles"
     app_version: str = "0.0.0"
     app_api_version: str = "v1"
+    app_api_host: str = "localhost"
     db_user: str = "heracles"
     db_password: str = "heracles"
     db_host: str = "localhost"

@@ -36,6 +36,7 @@ Database.init(app)
 origins = [
     "http://localhost",
     "http://localhost:3000",
+    f"http://{Settings().app_api_host}",
 ]
 
 app.add_middleware(
