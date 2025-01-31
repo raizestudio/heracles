@@ -11,8 +11,23 @@ git clone https://github.com/raizestudio/heracles.git
 # Navigate to the project directory
 cd heracles
 
-# Install dependencies
-npm install
+# Create venv
+python3.13 -m venv venv
+
+# Activate venv
+source venv/bin/activate
+
+# Install requirements
+pip install -r requirements.txt
+
+# Create .env file
+touch .env
+
+# or copy .env.example
+cp .env.example .env
+
+# Start API
+uvicorn main:app --reload
 ```
 
 ## Usage
