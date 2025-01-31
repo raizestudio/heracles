@@ -8,13 +8,20 @@ SECRET_KEY = "secret"
 ALGORITHM = "HS256"
 PUBLIC_ROUTES = [
     "/",
+    "/docs",
+    "/health",
     "/auth/authenticate",
     "/auth/authenticate/token",
     "/auth/session",
+    "/geo/continents",
+    "/geo/continents/AF",
     "/users",
     "/services",
     "/services/types",
     "/services/types/edl",
+    "/assets",
+    "/assets/types",
+    "/assets/0fe9d44b-5229-4311-ae1a-f64d4b38dc21",
 ]
 app = FastAPI()
 

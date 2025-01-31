@@ -66,6 +66,17 @@ class Refresh(Model):
         return self.token
 
 
+class ApiKey(Model):
+    """Model for API keys"""
+
+    key = fields.CharField(pk=True, max_length=255)
+    created_at = fields.DatetimeField(auto_now_add=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+
+    def __str__(self):
+        return self.key
+
+
 class Session(Model):
     """Model for sessions"""
 

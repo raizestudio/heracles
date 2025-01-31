@@ -7,6 +7,13 @@ interface FooterLandingProps {
   t?: string;
 }
 
+const detectIpType = (ip: string) => {
+  if (ip.includes(":")) {
+    return "ipv6";
+  }
+  return "ipv4";
+};
+
 const FooterLanding: React.FC<FooterLandingProps> = () => {
   const { session, setSession } = useUserStore();
 
@@ -14,12 +21,23 @@ const FooterLanding: React.FC<FooterLandingProps> = () => {
     fetch("https://freeipapi.com/api/json")
     .then((response) => response.json())
     .then((data) => {
+      let body = {};
+      
+      if (detectIpType(data.ipAddress) === "ipv4") {
+        body = {
+          ip_v4: data.ipAddress
+        };
+      } else {
+        body = {
+          ip_v6: data.ipAddress
+        };
+      }
+
+
       fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          ip_v4: data.ipAddress
-        }),
+        body: JSON.stringify(body),
       })
       .then((res) => res.json())
       .then((data) => {

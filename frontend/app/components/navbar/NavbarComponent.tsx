@@ -80,7 +80,7 @@ const NavbarComponent = () => {
     getCookieToken();
   }, []);
   return (
-    <nav className="h-12 flex justify-between items-center px-4 bg-gray-50 shadow">
+    <nav className="h-12 flex justify-between items-center px-4 bg-gray-100 shadow">
       <div className="flex items-center gap-2">
         {(process.env.NODE_ENV === "development" && process.env.DEMO === "false") && (
           <div className="bg-orange-500 p-1 rounded">

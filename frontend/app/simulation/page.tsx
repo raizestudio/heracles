@@ -1,3 +1,7 @@
+
+// Components
+import BreadcrumbComponent from "@/app/components/breadcrumb/BreadcrumbComponent";
+
 const SimulationPage = () => {
   return (
     <div className="flex grow">
@@ -7,8 +11,8 @@ const SimulationPage = () => {
         </div>
       ) : (
         <div className="flex flex-col grow mx-16 my-4 bg-gray-50 rounded shadow">
-          <div className="flex justify-center">
-            <h1 className="text-xl font-bold text-gray-800">Simulation Page</h1>
+          <div className="flex flex-col">
+            <BreadcrumbComponent />
           </div>
         </div>
       )}
