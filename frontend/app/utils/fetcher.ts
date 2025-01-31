@@ -4,7 +4,7 @@ export const fetcher = async <T>(
 ): Promise<T> => {
   const response = await fetch(url, {
     headers: {
-      'Content-Type': 'application/json',
+      // 'Content-Type': 'application/json',
       ...(options?.headers || {}),
     },
     ...options,

@@ -1,15 +1,37 @@
 from fastapi import APIRouter
 
-from models.geo import (Address, AdministrativeLevelOne,
-                        AdministrativeLevelTwo, CallingCode, City, CityType,
-                        Continent, Country, Currency, Language, PhoneNumber,
-                        Street, StreetType, TopLevelDomain)
-from schemas.geo import (AddressCreate, AdministrativeLevelOneCreate,
-                         AdministrativeLevelTwoCreate, CallingCodeCreate,
-                         CityCreate, CityTypeCreate, ContinentCreate,
-                         CountryCreate, CurrencyCreate, LanguageCreate,
-                         PhoneNumberCreate, StreetCreate, StreetTypeCreate,
-                         TopLevelDomainCreate)
+from models.geo import (
+    Address,
+    AdministrativeLevelOne,
+    AdministrativeLevelTwo,
+    CallingCode,
+    City,
+    CityType,
+    Continent,
+    Country,
+    Currency,
+    Language,
+    PhoneNumber,
+    Street,
+    StreetType,
+    TopLevelDomain,
+)
+from schemas.geo import (
+    AddressCreate,
+    AdministrativeLevelOneCreate,
+    AdministrativeLevelTwoCreate,
+    CallingCodeCreate,
+    CityCreate,
+    CityTypeCreate,
+    ContinentCreate,
+    CountryCreate,
+    CurrencyCreate,
+    LanguageCreate,
+    PhoneNumberCreate,
+    StreetCreate,
+    StreetTypeCreate,
+    TopLevelDomainCreate,
+)
 
 router = APIRouter()
 

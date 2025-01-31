@@ -12,8 +12,12 @@ from config import Settings
 from models.auth import Refresh, Session, Token
 from models.geo import Email
 from models.users import User
-from utils.crypt import (check_password, decode_token, generate_refresh_token,
-                         generate_token)
+from utils.crypt import (
+    check_password,
+    decode_token,
+    generate_refresh_token,
+    generate_token,
+)
 
 app = typer.Typer()
 settings = Settings()

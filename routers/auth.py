@@ -1,11 +1,15 @@
 import jwt
 from fastapi import APIRouter, HTTPException, status
 from fastapi.encoders import jsonable_encoder
+from tortoise.exceptions import DoesNotExist
 
 from models.auth import Session, Token
 from models.users import User
-from schemas.auth import (AuthenticationSchema, AuthenticationTokenSchema,
-                          SessionUserlessCreateSchema)
+from schemas.auth import (
+    AuthenticationSchema,
+    AuthenticationTokenSchema,
+    SessionCreateSchema,
+)
 from schemas.users import UserCreate, UserRead
 from utils.crypt import check_password, generate_token, hash_password
 
@@ -66,11 +70,45 @@ async def authenticate_token_user(authentication: AuthenticationTokenSchema):
     }
 
 
-@router.post("/session")
-async def create_session(session: SessionUserlessCreateSchema):
-    if session.token:
-        _token = await Token.get(token=session.token).prefetch_related("user")
-        user_data = UserRead.model_validate(_token.user)
+@router.post("/session", responses={status.HTTP_400_BAD_REQUEST: {"description": "Bad Request"}})
+async def create_session(session: SessionCreateSchema):
+    """
+    Detect if there's already a session for a given connection.
+    If there's no session, create one.
 
-    _session = await Session.create(ip_v4=session.ip_v4, ip_v6=session.ip_v6)
-    return {"message": "Session created successfully", "session": _session}
+    Args:
+        session (SessionCreateSchema): Session data
+        
+    Returns:
+        dict: Session data
+    """
+    print(session)
+    if not session.ip_v4 and not session.ip_v6:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="IP address is required")
+
+    _session = None
+    created = False
+
+    if session.ip_v4:
+        try:
+            _session = await Session.get(ip_v4=session.ip_v4)
+        except DoesNotExist:
+            _session = await Session.create(ip_v4=session.ip_v4)
+            created = True
+
+    if session.ip_v6:
+        try:
+            print("Getting session")
+            _session = await Session.get(ip_v6=session.ip_v6)
+        except DoesNotExist:
+            print("Creating session")
+            _session = await Session.create(ip_v6=session.ip_v6)
+            created = True
+
+    if _session is None:
+        _session = await Session.create(ip_v4=session.ip_v4, ip_v6=session.ip_v6)
+        created = True
+
+    
+    return {"session": _session, "created": created}
+

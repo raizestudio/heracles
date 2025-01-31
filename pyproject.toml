@@ -11,3 +11,5 @@ exclude = '''
   | frontend
 )/
 '''
+[tool.isort]
+profile = "black"

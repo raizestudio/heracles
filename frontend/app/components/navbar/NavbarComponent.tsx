@@ -82,12 +82,12 @@ const NavbarComponent = () => {
   return (
     <nav className="h-12 flex justify-between items-center px-4 bg-gray-100 shadow">
       <div className="flex items-center gap-2">
-        {(process.env.NODE_ENV === "development" && process.env.DEMO === "false") && (
+        {(process.env.NODE_ENV === "development" && process.env.DEMO?.toLocaleLowerCase() === "false") && (
           <div className="bg-orange-500 p-1 rounded">
             <FlaskIcon className="fill-white" />
           </div>
         )}
-        {process.env.DEMO === "true" && (
+        {process.env.DEMO?.toLocaleLowerCase() === "true" && (
           <div className="bg-blue-500 p-1 rounded">
             <BirdIcon className="fill-white" />
           </div>
