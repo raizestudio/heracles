@@ -1,0 +1,45 @@
+name: Deploy heracles to EC2
+
+on:
+  push:
+    branches:
+      - main  # Or whatever branch you want to deploy from
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Check out the code
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Set up SSH keys
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+        env:
+          EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
+
+      # Test SSH connection
+      - name: Test SSH connection
+        run: |
+          ssh -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST "echo Connected!"
+
+      # Install dependencies (if needed)
+      - name: Install dependencies on the server
+        run: |
+          ssh $EC2_USER@$EC2_HOST << 'EOF'
+            cd /srv
+            git pull origin main  # Pull latest changes
+            python3.13 -m venv venv
+            source ./venv/bin/activate  # Activate virtualenv if needed
+            pip install -r requirements.txt  # Install Python dependencies
+            # Other deployment commands like migrating DB, etc.
+            sudo systemctl restart heracles_api  # Restart service if needed
+          EOF
+
+      # (Optional) Deploy static files or handle specific tasks
+
