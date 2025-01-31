@@ -10,6 +10,9 @@ import useUserStore from "@/app/stores/userStore";
 // Libs
 import { fetcher } from "@/app/utils/fetcher"; // Assuming you have a fetcher function
 
+// Interfaces
+import { ISession } from "@/app/interfaces/SessionInterface";
+
 interface FooterLandingProps {
   t?: string;
 }
@@ -22,7 +25,7 @@ const FooterLanding: React.FC<FooterLandingProps> = () => {
   const { trigger } = useSWRMutation(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/session/`,
     async (url: string, { arg }: { arg: { ip_v4?: string; ip_v6?: string } }) =>
-      fetcher<{ session: any }>(url, {
+      fetcher<{ session: ISession }>(url, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(arg),
