@@ -8,6 +8,10 @@ test:
 coverage:
 	pytest --cov=. --cov-report=term-missing --cov-report=html
 
+# Run tests with coverage without report
+coverage-no-report:
+	pytest --cov=. --cov-report=term-missing
+	
 # Format code with Black and isort
 format:
 	black . && isort .
@@ -19,3 +23,8 @@ lint:
 # Install dependencies
 install:
 	pip install -r requirements.txt
+
+
+# Install dev
+install-dev:
+	python cli/cli.py core loadallfixtures dev
