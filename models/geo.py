@@ -37,8 +37,7 @@ class Currency(Model):
 
 class CallingCode(Model):
 
-    id = fields.IntField(pk=True)
-    code = fields.CharField(max_length=5, unique=True)
+    code = fields.CharField(pk=True, max_length=5, unique=True)
 
     country = fields.ForeignKeyField("models.Country", related_name="country_calling_code")
 
@@ -48,10 +47,12 @@ class CallingCode(Model):
 
 class PhoneNumber(Model):
 
-    id = fields.IntField(pk=True)
     phone_number = fields.CharField(max_length=32, unique=True)
 
     calling_code = fields.ForeignKeyField("models.CallingCode", related_name="calling_code")
+
+    class Meta:
+        unique_together = ("phone_number", "calling_code")
 
 
 class TopLevelDomain(Model):

@@ -1,7 +1,23 @@
 from fastapi import APIRouter
 
-from models.geo import Continent, Country, Currency, Language
-from schemas.geo import ContinentCreate, CountryCreate, CurrencyCreate, LanguageCreate
+from models.geo import (
+    CallingCode,
+    Continent,
+    Country,
+    Currency,
+    Language,
+    PhoneNumber,
+    TopLevelDomain,
+)
+from schemas.geo import (
+    CallingCodeCreate,
+    ContinentCreate,
+    CountryCreate,
+    CurrencyCreate,
+    LanguageCreate,
+    PhoneNumberCreate,
+    TopLevelDomainCreate,
+)
 
 router = APIRouter()
 
@@ -46,6 +62,71 @@ async def create_currency(currency: CurrencyCreate):
         minor_unit=currency.minor_unit,
     )
     return _currency
+
+
+@router.get("/calling-codes")
+async def get_calling_codes():
+    _calling_codes = await CallingCode.all()
+    return _calling_codes
+
+
+@router.get("/calling-codes/{calling_code}")
+async def get_calling_code(calling_code: str):
+    _calling_code = await CallingCode.get(code=calling_code)
+    return _calling_code
+
+
+@router.post("/calling-codes")
+async def create_calling_code(calling_code: CallingCodeCreate):
+    _country = await Country.get(code_iso2=calling_code.country)
+    _calling_code = await CallingCode.create(code=calling_code.code, country=_country)
+    return _calling_code
+
+
+@router.get("/phone-numbers")
+async def get_phone_numbers():
+    _phone_numbers = await PhoneNumber.all()
+    return _phone_numbers
+
+
+@router.get("/phone-numbers/{phone_number}")
+async def get_phone_number(phone_number: str):
+    _phone_number = await PhoneNumber.get(phone_number=phone_number)
+    return _phone_number
+
+
+@router.post("/phone-numbers")
+async def create_phone_number(phone_number: PhoneNumberCreate):
+    _calling_code = await CallingCode.get(code=phone_number.calling_code)
+    _phone_number = await PhoneNumber.create(phone_number=phone_number.phone_number, calling_code=_calling_code)
+    return _phone_number
+
+
+@router.get("/top-level-domains")
+async def get_top_level_domains():
+    _top_level_domains = await TopLevelDomain.all()
+    return _top_level_domains
+
+
+@router.get("/top-level-domains/{top_level_domain}")
+async def get_top_level_domain(top_level_domain: str):
+    _top_level_domain = await TopLevelDomain.get(code=top_level_domain)
+    return _top_level_domain
+
+
+@router.post("/top-level-domains")
+async def create_top_level_domain(top_level_domain: TopLevelDomainCreate):
+    _country = await Country.get(code_iso2=top_level_domain.country)
+    _top_level_domain = await TopLevelDomain.create(
+        code=top_level_domain.code,
+        operator=top_level_domain.operator,
+        idn=top_level_domain.idn,
+        dnssec=top_level_domain.dnssec,
+        sld=top_level_domain.sld,
+        ipv6=top_level_domain.ipv6,
+        country=_country,
+    )
+    return _top_level_domain
 
 
 @router.get("/continents")
