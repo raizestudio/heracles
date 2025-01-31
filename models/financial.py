@@ -24,9 +24,7 @@ class Simulation(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     tax = fields.ForeignKeyField("models.Tax", related_name="simulation_tax")
-    service_request = fields.ForeignKeyField(
-        "models.ServiceRequest", related_name="simulation_service_request"
-    )
+    service_request = fields.ForeignKeyField("models.ServiceRequest", related_name="simulation_service_request")
 
     def __str__(self):
         return super().__str__()
@@ -41,9 +39,7 @@ class Order(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
     tax = fields.ForeignKeyField("models.Tax", related_name="order_tax")
-    service_request = fields.ForeignKeyField(
-        "models.ServiceRequest", related_name="order_service_request"
-    )
+    service_request = fields.ForeignKeyField("models.ServiceRequest", related_name="order_service_request")
 
     def __str__(self):
         return super().__str__()

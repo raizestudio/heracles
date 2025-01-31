@@ -37,13 +37,9 @@ async def load_fixture(app: str, model: str, env: str = "prod") -> None:
                 if field_info and hasattr(field_info, "related_model"):
                     related_model = field_info.related_model
                     try:
-                        related_instance = await related_model.get(
-                            **{field_info.to_field: value}
-                        )
+                        related_instance = await related_model.get(**{field_info.to_field: value})
                     except DoesNotExist:
-                        related_instance = await related_model.create(
-                            **{field_info.to_field: value}
-                        )
+                        related_instance = await related_model.create(**{field_info.to_field: value})
                     item[field] = related_instance
 
             await model_class.update_or_create(**item)

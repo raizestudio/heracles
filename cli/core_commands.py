@@ -89,9 +89,7 @@ def getmenu(name: str):
             console.print(table)
 
         except DoesNotExist:
-            r_print(
-                f"[bold red]Menu[/bold red] [italic white]{name}[/italic white] [bold red]match does not exist![/bold red] :boom:"
-            )
+            r_print(f"[bold red]Menu[/bold red] [italic white]{name}[/italic white] [bold red]match does not exist![/bold red] :boom:")
 
         await Tortoise.close_connections()
 

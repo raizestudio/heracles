@@ -1,37 +1,15 @@
 from fastapi import APIRouter
 
-from models.geo import (
-    Address,
-    AdministrativeLevelOne,
-    AdministrativeLevelTwo,
-    CallingCode,
-    City,
-    CityType,
-    Continent,
-    Country,
-    Currency,
-    Language,
-    PhoneNumber,
-    Street,
-    StreetType,
-    TopLevelDomain,
-)
-from schemas.geo import (
-    AddressCreate,
-    AdministrativeLevelOneCreate,
-    AdministrativeLevelTwoCreate,
-    CallingCodeCreate,
-    CityCreate,
-    CityTypeCreate,
-    ContinentCreate,
-    CountryCreate,
-    CurrencyCreate,
-    LanguageCreate,
-    PhoneNumberCreate,
-    StreetCreate,
-    StreetTypeCreate,
-    TopLevelDomainCreate,
-)
+from models.geo import (Address, AdministrativeLevelOne,
+                        AdministrativeLevelTwo, CallingCode, City, CityType,
+                        Continent, Country, Currency, Language, PhoneNumber,
+                        Street, StreetType, TopLevelDomain)
+from schemas.geo import (AddressCreate, AdministrativeLevelOneCreate,
+                         AdministrativeLevelTwoCreate, CallingCodeCreate,
+                         CityCreate, CityTypeCreate, ContinentCreate,
+                         CountryCreate, CurrencyCreate, LanguageCreate,
+                         PhoneNumberCreate, StreetCreate, StreetTypeCreate,
+                         TopLevelDomainCreate)
 
 router = APIRouter()
 
@@ -112,9 +90,7 @@ async def get_phone_number(phone_number: str):
 @router.post("/phone-numbers")
 async def create_phone_number(phone_number: PhoneNumberCreate):
     _calling_code = await CallingCode.get(code=phone_number.calling_code)
-    _phone_number = await PhoneNumber.create(
-        phone_number=phone_number.phone_number, calling_code=_calling_code
-    )
+    _phone_number = await PhoneNumber.create(phone_number=phone_number.phone_number, calling_code=_calling_code)
     return _phone_number
 
 
@@ -200,9 +176,7 @@ async def get_administrative_levels_one():
 
 @router.get("/administrative-levels-one/{administrative_level_one}")
 async def get_administrative_level_one(administrative_level_one: str):
-    _administrative_level_one = await AdministrativeLevelOne.get(
-        code=administrative_level_one
-    )
+    _administrative_level_one = await AdministrativeLevelOne.get(code=administrative_level_one)
     return _administrative_level_one
 
 
@@ -227,9 +201,7 @@ async def get_administrative_levels_two():
 
 @router.get("/administrative-levels-two/{administrative_level_two}")
 async def get_administrative_level_two(administrative_level_two: str):
-    _administrative_level_two = await AdministrativeLevelTwo.get(
-        code=administrative_level_two
-    )
+    _administrative_level_two = await AdministrativeLevelTwo.get(code=administrative_level_two)
     return _administrative_level_two
 
 
@@ -237,9 +209,7 @@ async def get_administrative_level_two(administrative_level_two: str):
 async def create_administrative_level_two(
     administrative_level_two: AdministrativeLevelTwoCreate,
 ):
-    _administrative_level_one = await AdministrativeLevelOne.get(
-        code=administrative_level_two.administrative_level_one
-    )
+    _administrative_level_one = await AdministrativeLevelOne.get(code=administrative_level_two.administrative_level_one)
     _administrative_level_two = await AdministrativeLevelTwo.create(
         code=administrative_level_two.code,
         name=administrative_level_two.name,
@@ -287,12 +257,8 @@ async def get_city(city: str):
 @router.post("/cities")
 async def create_city(city: CityCreate):
     _city_type = await CityType.get(code=city.city_type)
-    _administrative_level_one = await AdministrativeLevelOne.get(
-        code=city.administrative_level_one
-    )
-    _administrative_level_two = await AdministrativeLevelTwo.get(
-        code=city.administrative_level_two
-    )
+    _administrative_level_one = await AdministrativeLevelOne.get(code=city.administrative_level_one)
+    _administrative_level_two = await AdministrativeLevelTwo.get(code=city.administrative_level_two)
     _city = await City.create(
         name=city.name,
         postal_code=city.postal_code,
@@ -318,9 +284,7 @@ async def get_street_type(street_type: str):
 
 @router.post("/street-types")
 async def create_street_type(street_type: StreetTypeCreate):
-    _street_type = await StreetType.create(
-        code=street_type.code, name=street_type.name, short_name=street_type.short_name
-    )
+    _street_type = await StreetType.create(code=street_type.code, name=street_type.name, short_name=street_type.short_name)
     return _street_type
 
 
@@ -340,9 +304,7 @@ async def get_street(street: str):
 async def create_street(street: StreetCreate):
     _street_type = await StreetType.get(code=street.street_type)
     _city = await City.get(name=street.city)
-    _street = await Street.create(
-        name=street.name, street_type=_street_type, city=_city
-    )
+    _street = await Street.create(name=street.name, street_type=_street_type, city=_city)
     return _street
 
 

@@ -4,11 +4,8 @@ from fastapi.encoders import jsonable_encoder
 
 from models.auth import Session, Token
 from models.users import User
-from schemas.auth import (
-    AuthenticationSchema,
-    AuthenticationTokenSchema,
-    SessionUserlessCreateSchema,
-)
+from schemas.auth import (AuthenticationSchema, AuthenticationTokenSchema,
+                          SessionUserlessCreateSchema)
 from schemas.users import UserCreate, UserRead
 from utils.crypt import check_password, generate_token, hash_password
 
@@ -46,14 +43,10 @@ async def authenticate_user(authentication: AuthenticationSchema):
     token = generate_token(_user.email)
     _token = await Token.create(token=token, user=_user)
     if not _user:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
     if not check_password(authentication.password, _user.password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized"
-        )
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
     return {"message": "User authenticated successfully", "user": _user, "token": token}
 
@@ -64,9 +57,7 @@ async def authenticate_token_user(authentication: AuthenticationTokenSchema):
     user_data = UserRead.model_validate(_token.user)
 
     if not _token:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Token match not found"
-        )
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token match not found")
 
     return {
         "message": "User authenticated successfully",

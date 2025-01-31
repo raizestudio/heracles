@@ -100,9 +100,7 @@ def createcurrency(
             db_url=settings.db_url,
             modules={"models": ["models.geo"]},
         )
-        _currency = await Currency.create(
-            code=code, code_numeric=code_numeric, name=name, minor_unit=minor_unit
-        )
+        _currency = await Currency.create(code=code, code_numeric=code_numeric, name=name, minor_unit=minor_unit)
         typer.echo(_currency)
 
         await Tortoise.close_connections()
@@ -300,9 +298,7 @@ def getcountry(code_iso2: str):
             modules={"models": ["models.geo"]},
         )
         try:
-            _country = await Country.get(code_iso2=code_iso2).prefetch_related(
-                "continent", "currency", "language_official"
-            )
+            _country = await Country.get(code_iso2=code_iso2).prefetch_related("continent", "currency", "language_official")
             table = Table(
                 "Code Iso 2",
                 "Code Iso 3",

@@ -17,9 +17,7 @@ settings = Settings()
 
 
 @app.command()
-def createuser(
-    username: str, password: str, email: str, first_name: str, last_name: str, role: str
-):
+def createuser(username: str, password: str, email: str, first_name: str, last_name: str, role: str):
     """Create user"""
 
     async def _create_user():

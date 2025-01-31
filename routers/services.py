@@ -22,9 +22,7 @@ async def get_service_type(service_type: str):
 
 @router.post("/types")
 async def create_service_type(service_type: ServiceTypeCreate):
-    _service_type = await ServiceType.create(
-        code=service_type.code, name=service_type.name
-    )
+    _service_type = await ServiceType.create(code=service_type.code, name=service_type.name)
     return _service_type
 
 
@@ -43,7 +41,5 @@ async def get_service(service: int):
 @router.post("/")
 async def create_service(service: ServiceCreate):
     _service_type = await ServiceType.get(code=service.service_type)
-    _service = await Service.create(
-        name=service.name, description=service.description, service_type=_service_type
-    )
+    _service = await Service.create(name=service.name, description=service.description, service_type=_service_type)
     return _service

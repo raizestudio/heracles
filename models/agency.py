@@ -17,13 +17,9 @@ class Agency(Model):
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
 
-    phone_number = fields.ForeignKeyField(
-        "models.PhoneNumber", related_name="agency_phone_numbers", null=True
-    )
+    phone_number = fields.ForeignKeyField("models.PhoneNumber", related_name="agency_phone_numbers", null=True)
     assets = fields.ManyToManyField("models.Asset", related_name="agency_assets")
-    service_requests = fields.ManyToManyField(
-        "models.ServiceRequest", related_name="agency_service_requests"
-    )
+    service_requests = fields.ManyToManyField("models.ServiceRequest", related_name="agency_service_requests")
 
     def __str__(self):
         return self.name
