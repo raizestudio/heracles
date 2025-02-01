@@ -4,6 +4,12 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
+// Components
+import ToastComponent from "@/app/components/toast/ToastComponent";
+
+// Icons
+import CookieIcon from "@/app/components/icons/CookieIcon";
+
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
@@ -30,6 +36,13 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ToastComponent
+          title="Votre vie privée est importante."
+          message={`Nous utilisons des cookies pour améliorer votre expérience de navigation et analyser notre trafic. En continuant votre navigation sur le site, vous consentez à l'utilisation de cookies.`}
+          type="default"
+          duration={10000}
+          icon={<CookieIcon width={24} height={24} className="fill-gray-900" />}
+        />
         <div className="flex flex-col">
           {/* <NavbarComponent /> */}
           {children}

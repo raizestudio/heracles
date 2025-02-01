@@ -1,12 +1,15 @@
 import Link from "next/link";
 
+// Components
 import NavbarComponent from "@/app/components/navbar/NavbarComponent";
 import FooterLanding from "@/app/components/footer/FooterLanding";
+
 
 export default function Home() {
   return (
     <>
       <NavbarComponent />
+      
       <div className="w-screen h-[calc(100vh-3rem)] flex flex-col justify-center items-center grow bg-gray-100">
         <div className="flex flex-col justify-center items-center gap-10">
           <div className="flex flex-col justify-center items-center gap-4">
@@ -15,7 +18,10 @@ export default function Home() {
               Trouvez un expert pour votre diagnostic en quelques secondes.
             </span>
           </div>
-          <Link className="bg-gray-50 rounded p-3 shadow-sm hover:shadow" href="/simulation">
+          <Link
+            className="bg-gray-50 rounded p-3 shadow-sm hover:shadow"
+            href="/simulation"
+          >
             <span className="text-sm text-gray-800">Faire une simulation</span>
           </Link>
         </div>
