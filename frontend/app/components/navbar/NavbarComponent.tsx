@@ -9,6 +9,7 @@ import { useEffect } from "react";
 
 // Components
 import DropdownComponent from "@/app/components/dropdown/DropdownComponent";
+import TooltipComponent from "@/app/components/tooltip/TooltipComponent";
 
 // Icons
 import HomeIcon from "@/app/components/icons/HomeIcon";
@@ -65,32 +66,37 @@ const NavbarComponent = () => {
         fetch("http://localhost:8000/auth/authenticate/token/", {
           method: "POST",
           body: JSON.stringify({
-            token: token
+            token: token,
           }),
           headers: {
             "Content-Type": "application/json",
           },
         })
-        .then((res) => res.json())
-        .then(async (data) => {
-          login(data.user)
-        })
+          .then((res) => res.json())
+          .then(async (data) => {
+            login(data.user);
+          });
       }
-    }
+    };
     getCookieToken();
   }, []);
   return (
     <nav className="h-12 flex justify-between items-center px-4 bg-gray-100 shadow">
       <div className="flex items-center gap-2">
-        {(process.env.NODE_ENV === "development" && process.env.DEMO?.toLocaleLowerCase() === "false") && (
-          <div className="bg-orange-500 p-1 rounded">
-            <FlaskIcon className="fill-white" />
-          </div>
-        )}
+        {process.env.NODE_ENV === "development" &&
+          process.env.DEMO?.toLocaleLowerCase() === "false" && (
+            <TooltipComponent text="Development" position="bottom">
+              <div className="bg-orange-500 p-1 rounded">
+                <FlaskIcon className="fill-white" />
+              </div>
+            </TooltipComponent>
+          )}
         {process.env.DEMO?.toLocaleLowerCase() === "true" && (
-          <div className="bg-blue-500 p-1 rounded">
-            <BirdIcon className="fill-white" />
-          </div>
+          <TooltipComponent text="Demo" position="bottom">
+            <div className="bg-blue-500 p-1 rounded">
+              <BirdIcon className="fill-white" />
+            </div>
+          </TooltipComponent>
         )}
         <Link
           href="/"
@@ -98,7 +104,6 @@ const NavbarComponent = () => {
         >
           Heracles
         </Link>
-        
       </div>
       <div className="flex gap-1">
         <ul className="flex gap-2">
