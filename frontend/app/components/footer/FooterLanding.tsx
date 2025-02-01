@@ -3,6 +3,7 @@ import React, { useEffect } from "react";
 import Link from "next/link";
 import useSWRMutation from "swr/mutation";
 import { version } from "@/package.json";
+import { toast } from "sonner";
 
 // Stores
 import useUserStore from "@/app/stores/userStore";
@@ -33,6 +34,13 @@ const FooterLanding: React.FC<FooterLandingProps> = () => {
   );
 
   useEffect(() => {
+    toast("Votre vie privée est importante", {
+      description: `Nous utilisons des cookies pour améliorer votre expérience de navigation et analyser notre trafic. En continuant votre navigation sur le site, vous consentez à l'utilisation de cookies.`,
+      action: {
+        label: "Fermer",
+        onClick: () => toast.dismiss(),
+      },
+    })
     const fetchSession = async () => {
       try {
         const response = await fetch("https://freeipapi.com/api/json");
@@ -76,8 +84,8 @@ const FooterLanding: React.FC<FooterLandingProps> = () => {
           </Link>
         </div>
         <div className="flex justify-end gap-1.5">
-          <span className="text-xs text-gray-700">{session?.id}</span>
-          <span className="text-xs text-gray-700">v{version}</span>
+          <span className="text-xs text-gray-700 dark:text-gray-300">{session?.id}</span>
+          <span className="text-xs text-gray-700 dark:text-gray-300">v{version}</span>
         </div>
       </div>
     </footer>
