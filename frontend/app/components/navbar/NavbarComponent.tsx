@@ -6,10 +6,23 @@ import { useState } from "react";
 import useUserStore from "@/app/stores/userStore";
 import { usePathname } from "next/navigation";
 import { useEffect } from "react";
+import { useTheme } from "next-themes";
 
 // Components
 import DropdownComponent from "@/app/components/dropdown/DropdownComponent";
-import TooltipComponent from "@/app/components/tooltip/TooltipComponent";
+import { Button, buttonVariants } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Icons
 import HomeIcon from "@/app/components/icons/HomeIcon";
@@ -18,6 +31,8 @@ import LogoutIcon from "@/app/components/icons/LogoutIcon";
 import FlaskIcon from "@/app/components/icons/FlaskIcon";
 import NotificationIcon from "@/app/components/icons/NotificationIcon";
 import BirdIcon from "@/app/components/icons/BirdIcon";
+import MoonIcon from "@/app/components/icons/MoonIcon";
+import SunIcon from "@/app/components/icons/SunIcon";
 
 import { deleteCookie, getCookie } from "@/app/actions/cookie";
 import { useRouter } from "next/navigation";
@@ -34,6 +49,7 @@ const NavbarComponent = () => {
 
   const router = useRouter();
   const { user, isLoggedIn, logout, login } = useUserStore();
+  const { setTheme } = useTheme();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -81,22 +97,36 @@ const NavbarComponent = () => {
     getCookieToken();
   }, []);
   return (
-    <nav className="h-12 flex justify-between items-center px-4 bg-gray-100 shadow">
+    <nav className="h-12 flex justify-between items-center px-4">
       <div className="flex items-center gap-2">
         {process.env.NODE_ENV === "development" &&
           process.env.DEMO?.toLocaleLowerCase() === "false" && (
-            <TooltipComponent text="Development" position="bottom">
-              <div className="bg-orange-500 p-1 rounded">
-                <FlaskIcon className="fill-white" />
-              </div>
-            </TooltipComponent>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger>
+                  <div className="bg-orange-500 p-1 rounded">
+                    <FlaskIcon className="fill-white" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Heracles is running in dev env.</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           )}
         {process.env.DEMO?.toLocaleLowerCase() === "true" && (
-          <TooltipComponent text="Demo" position="bottom">
-            <div className="bg-blue-500 p-1 rounded">
-              <BirdIcon className="fill-white" />
-            </div>
-          </TooltipComponent>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger>
+                <div className="bg-blue-500 p-1 rounded">
+                  <BirdIcon className="fill-white" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Attention ceci est un environnement de démo.</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         )}
         <Link
           href="/"
@@ -111,7 +141,7 @@ const NavbarComponent = () => {
             <li key={index}>
               <Link
                 href={menu.url}
-                className="flex text-white bg-gray-800 hover:bg-primary-400 active:bg-primary-100 px-2 py-1 rounded select-none"
+                className={buttonVariants({ variant: "outline", size: "icon" })}
               >
                 {menu.icon && <menu.icon width={20} height={20} />}
               </Link>
@@ -191,6 +221,34 @@ const NavbarComponent = () => {
             </DropdownComponent.Content>
           </DropdownComponent>
         )}
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="icon">
+              <SunIcon
+                className="rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+                height={4}
+                width={4}
+              />
+              <MoonIcon
+                className="absolute rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+                height={2}
+                width={2}
+              />
+              <span className="sr-only">Toggle theme</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setTheme("light")}>
+              Light
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("dark")}>
+              Dark
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setTheme("system")}>
+              System
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </nav>
   );

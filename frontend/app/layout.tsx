@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ThemeProvider } from "@/app/components/theme-provider";
 
 // Static
 import localFont from "next/font/local";
@@ -36,6 +37,12 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
         <ToastComponent
           title="Votre vie privée est importante."
           message={`Nous utilisons des cookies pour améliorer votre expérience de navigation et analyser notre trafic. En continuant votre navigation sur le site, vous consentez à l'utilisation de cookies.`}
@@ -48,6 +55,7 @@ export default function RootLayout({
           {children}
           {/* <FooterComponent /> */}
         </div>
+        </ThemeProvider>
       </body>
     </html>
   );

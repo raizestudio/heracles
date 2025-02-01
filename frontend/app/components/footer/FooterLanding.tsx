@@ -54,7 +54,7 @@ const FooterLanding: React.FC<FooterLandingProps> = () => {
   }, [trigger, setSession]);
 
   return (
-    <footer className="flex bg-gray-50 p-4 shadow">
+    <footer className="flex bg-gray-50 dark:bg-black p-4 shadow">
       <div className="flex flex-col">
         <span className="text-primary-100 text-sm font-semibold">
           Heracles - {new Date().getFullYear()}
