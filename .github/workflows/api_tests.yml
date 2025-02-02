@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - preprod
-      -prod
+      - prod
       
   pull_request:
 
