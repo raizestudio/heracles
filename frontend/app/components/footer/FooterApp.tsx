@@ -41,7 +41,7 @@ const FooterApp: React.FC<FooterAppProps> = () => {
   }, []);
 
   return (
-    <footer className="flex justify-between items-center  h-8 px-4 shadow">
+    <footer className="flex justify-between items-center h-8 px-4 border-t border-gray-200 dark:border-gray-800">
       <div>
         <span className="text-primary-100 text-sm font-semibold">
           Heracles - {new Date().getFullYear()}

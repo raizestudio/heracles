@@ -1,9 +1,13 @@
+import json
 from enum import IntEnum
 
+from httpx import AsyncClient
 from tortoise import fields
 from tortoise.manager import Manager
 from tortoise.models import Model
 from tortoise.queryset import QuerySet
+
+from utils.cache import get_from_cache, set_in_cache
 
 
 class AdministrativeLevelsEnum(IntEnum):
@@ -229,6 +233,40 @@ class Address(Model):
     longitude = fields.FloatField(null=True)
 
     street = fields.ForeignKeyField("models.Street", related_name="street", null=True)
+
+    @classmethod
+    async def search_address_gov(cls, address: str):
+        """
+        Search an address using the API Adresse from data.gouv.fr.
+
+        Args:
+            address (str): The address to search.
+
+        Returns:
+            dict: The response from the API.
+            bool: True if the response is from the cache, False otherwise.
+        """
+        response = None
+        is_cached = False
+        
+        cached_response = get_from_cache(address)
+        if cached_response:
+            cached_response = cached_response.decode("utf-8")
+
+            response = json.loads(cached_response)
+            is_cached = True
+
+        else:
+            async with AsyncClient() as client:
+                api_response = await client.get(f"https://api-adresse.data.gouv.fr/search/?q={address}")
+                if api_response.status_code != 200:
+                    return None
+
+                json_response = api_response.json()
+                set_in_cache(address, json.dumps(json_response), 600)
+                response = json_response
+
+        return response, is_cached
 
     def __str__(self):
         return f"{self.number} {self.street.name}"

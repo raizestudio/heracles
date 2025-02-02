@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-
+from typing import List
 
 class LanguageCreate(BaseModel):
     """Schema for creating a language."""
@@ -135,3 +135,13 @@ class AddressCreate(BaseModel):
     longitude: str = Field(None, description="Longitude of the address.")
 
     street: str = Field(..., description="Street of the address.")
+
+class AddressGovFeature(BaseModel):
+    type: str = Field(..., description="Type of the ressource.")
+    geometry: dict = Field(..., description="Geometry of the ressource.")
+    properties: dict = Field(..., description="Properties of the ressource.")
+    
+class AddressGovAPI(BaseModel):
+    type: str = Field(..., description="Type of the ressources in the result.")
+    version: str = Field(..., description="Version of the ressources.")
+    features: List[AddressGovFeature] = Field(..., description="Features of the ressources.")
