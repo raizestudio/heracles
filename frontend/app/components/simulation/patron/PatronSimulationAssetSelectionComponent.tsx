@@ -23,6 +23,7 @@ const PatronSimulationAssetSelectionComponent: React.FC<
       </div>
       <div className="basis-1/3">
         <h1 className="text-xl font-bold">Résumé</h1>
+        <Button onClick={updateValidSteps} className="w-full mt-4"></Button>
       </div>
     </div>
   );
