@@ -11,12 +11,17 @@ const SimulationPage = () => {
     <div className="flex grow">
       {process.env.DEMO?.toLocaleLowerCase() === "true" ? (
         <div className="flex flex-col justify-center items-center grow mx-16 my-4 rounded">
-          <WrenchIcon width={64} height={64} fill="#000" className="mb-4" />
-          <h1 className="text-2xl font-bold">En construction</h1>
-          <p className="text-lg text-center">
-            Cette page est en cours de développement, merci de revenir plus
-            tard.
-          </p>
+          <WrenchIcon
+            width={96}
+            height={96}
+            className="mb-4 dark:fill-gray-50"
+          />
+          <div className="flex flex-col items-center gap-2">
+            <h1 className="text-4xl font-black">En construction</h1>
+            <p className="text-lg text-center">
+              Cette fonctionnalité sera bientôt disponible en démo.
+            </p>
+          </div>
         </div>
       ) : (
         <div className="flex flex-col items-center grow mx-16 my-4">

@@ -41,9 +41,9 @@ const PatronSimulationAssetSelectionComponent: React.FC<
   const [searchAddress, setSearchAddress] = useState("");
   const [searchResults, setSearchResults] = useState<IAPIGovFeature[]>([]);
   const [featurePreview, setFeaturePreview] = useState<IAPIGovFeature | null>();
-  // const [selectedFeatures, setSelectedFeatures] = useState<IAPIGovFeature[]>(
-  //   []
-  // );
+  const [selectedFeatures, setSelectedFeatures] = useState<IAPIGovFeature[]>(
+    []
+  );
   const [featurePreviewData, setFeaturePreviewData] =
     useState<IFeaturePreviewData>({
       transationType: "sell",
@@ -54,7 +54,8 @@ const PatronSimulationAssetSelectionComponent: React.FC<
       electricalInstallation: "",
       gasInstallation: "",
     });
-  const [canAddPreviewFeature, setCanAddPreviewFeature] = useState<boolean>(false);
+  const [canAddPreviewFeature, setCanAddPreviewFeature] =
+    useState<boolean>(false);
   const [currentMapLocation, setCurrentMapLocation] = useState<
     [number, number] | null
   >(null);
@@ -112,6 +113,8 @@ const PatronSimulationAssetSelectionComponent: React.FC<
   }, []);
 
   useEffect(() => {
+    console.log(`DEBUG: featurePreviewData`, featurePreviewData);
+    console.log(`DEBUG: canAddPreviewFeature 1`, canAddPreviewFeature);
     if (
       featurePreview &&
       featurePreviewData.transationType &&
@@ -126,8 +129,15 @@ const PatronSimulationAssetSelectionComponent: React.FC<
     } else {
       setCanAddPreviewFeature(false);
     }
+    console.log(`DEBUG: canAddPreviewFeature 2`, canAddPreviewFeature);
   }, [featurePreview, featurePreviewData]);
-  
+
+  useEffect(() => {
+    if (selectedFeatures.length > 0) {
+      updateValidSteps();
+    } 
+  }, [selectedFeatures]);
+
   const UpdateMapCenter = () => {
     const map = useMap();
     useEffect(() => {
@@ -388,13 +398,24 @@ const PatronSimulationAssetSelectionComponent: React.FC<
                   </div>
                   <div>
                     <span>Installation électrique:</span>
-                    <Select>
+                    <Select
+                      onValueChange={(value) =>
+                        setFeaturePreviewData({
+                          ...featurePreviewData,
+                          electricalInstallation: value,
+                        })
+                      }
+                    >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Sélectionner option" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="less15">Oui, moins de 15 ans.</SelectItem>
-                        <SelectItem value="more15">Oui, plus de 15 ans.</SelectItem>
+                        <SelectItem value="less15">
+                          Oui, moins de 15 ans.
+                        </SelectItem>
+                        <SelectItem value="more15">
+                          Oui, plus de 15 ans.
+                        </SelectItem>
                         <SelectItem value="no">Non.</SelectItem>
                         <SelectItem value="unknown">Je ne sais pas.</SelectItem>
                       </SelectContent>
@@ -402,13 +423,24 @@ const PatronSimulationAssetSelectionComponent: React.FC<
                   </div>
                   <div>
                     <span>Installation gaz:</span>
-                    <Select onValueChange={(value) => setFeaturePreviewData({...featurePreviewData, gasInstallation: value})}>
+                    <Select
+                      onValueChange={(value) =>
+                        setFeaturePreviewData({
+                          ...featurePreviewData,
+                          gasInstallation: value,
+                        })
+                      }
+                    >
                       <SelectTrigger className="w-[180px]">
                         <SelectValue placeholder="Sélectionner option" />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="less15">Oui, moins de 15 ans.</SelectItem>
-                        <SelectItem value="more15">Oui, plus de 15 ans.</SelectItem>
+                        <SelectItem value="less15">
+                          Oui, moins de 15 ans.
+                        </SelectItem>
+                        <SelectItem value="more15">
+                          Oui, plus de 15 ans.
+                        </SelectItem>
                         <SelectItem value="no">Non.</SelectItem>
                         <SelectItem value="unknown">Je ne sais pas.</SelectItem>
                       </SelectContent>
@@ -419,7 +451,9 @@ const PatronSimulationAssetSelectionComponent: React.FC<
                   <Button onClick={() => setFeaturePreview(null)}>
                     Annuler
                   </Button>
-                  <Button disabled={!canAddPreviewFeature}>Ajouter {canAddPreviewFeature}</Button>
+                  <Button disabled={!canAddPreviewFeature} onClick={() => setSelectedFeatures([...selectedFeatures, featurePreview])}>
+                    Ajouter {canAddPreviewFeature}
+                  </Button>
                 </div>
               </div>
             )}
@@ -460,7 +494,12 @@ const PatronSimulationAssetSelectionComponent: React.FC<
       </div>
       <div className="basis-1/3">
         <h1 className="text-xl font-bold">Résumé</h1>
-        <Button onClick={updateValidSteps} className="w-full mt-4"></Button>
+        {selectedFeatures.map((feature, index) => (
+          <div key={index}>
+            <span>{feature.properties.label}</span>
+          </div>
+        ))}
+        {/* <Button onClick={updateValidSteps} className="w-full mt-4"></Button> */}
       </div>
     </div>
   );
