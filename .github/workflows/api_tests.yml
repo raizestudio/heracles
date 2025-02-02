@@ -1,9 +1,12 @@
-name: Run Tests
+name: Run API Tests
 
 on:
   push:
     branches:
       - main
+      - preprod
+      -prod
+      
   pull_request:
 
 jobs:
