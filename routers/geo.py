@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, status
 
 from models.geo import (
     Address,
@@ -334,7 +334,11 @@ async def create_street(street: StreetCreate):
 
 @router.get("/addresses/search")
 async def search_addresses(address: Annotated[str, Query(...)]):
+    if not address:
+        return {"detail": "Address is required", "status_code": status.HTTP_400_BAD_REQUEST}
+
     gov_address_match, is_cached = await Address.search_address_gov(address)
+
     if gov_address_match:
         return {"result": gov_address_match["features"], "is_cached": is_cached}
 

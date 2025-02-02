@@ -248,7 +248,7 @@ class Address(Model):
         """
         response = None
         is_cached = False
-        
+
         cached_response = get_from_cache(address)
         if cached_response:
             cached_response = cached_response.decode("utf-8")
@@ -258,7 +258,7 @@ class Address(Model):
 
         else:
             async with AsyncClient() as client:
-                api_response = await client.get(f"https://api-adresse.data.gouv.fr/search/?q={address}")
+                api_response = await client.get(f"https://api-adresse.data.gouv.fr/search/?q={address}&limit=5")
                 if api_response.status_code != 200:
                     return None
 

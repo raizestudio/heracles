@@ -1,6 +1,9 @@
 import valkey
 
-redis = valkey.Valkey(host="localhost", port=6379, db=0)
+from config import Settings
+
+settings = Settings()
+redis = valkey.Valkey(host=settings.cache_host, port=settings.cache_port, db=settings.cache_db)
 
 
 def get_from_cache(key: str):
