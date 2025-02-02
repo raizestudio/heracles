@@ -41,9 +41,9 @@ const PatronSimulationAssetSelectionComponent: React.FC<
   const [searchAddress, setSearchAddress] = useState("");
   const [searchResults, setSearchResults] = useState<IAPIGovFeature[]>([]);
   const [featurePreview, setFeaturePreview] = useState<IAPIGovFeature | null>();
-  const [selectedFeatures, setSelectedFeatures] = useState<IAPIGovFeature[]>(
-    []
-  );
+  // const [selectedFeatures, setSelectedFeatures] = useState<IAPIGovFeature[]>(
+  //   []
+  // );
   const [featurePreviewData, setFeaturePreviewData] =
     useState<IFeaturePreviewData>({
       transationType: "sell",
