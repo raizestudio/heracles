@@ -235,6 +235,35 @@ class Address(Model):
     street = fields.ForeignKeyField("models.Street", related_name="street", null=True)
 
     @classmethod
+    async def api_gov_adresse_connector(cls, api_gov_feature: dict):
+        """
+        Translate API Adresse Feature in to Address.
+
+        Args:
+            api_gov_address (dict): A Feature from the API Adresse.
+
+        Returns:
+            dict: The address data.
+        """
+        if api_gov_feature:
+            _type = api_gov_feature.get("type")
+            geometry = api_gov_feature.get("geometry")
+            properties = api_gov_feature.get("properties")
+            _address = (
+                await cls.filter(number=properties.get("housenumber"), street__name=properties.get("street"), street__city__name=properties.get("city"))
+                .first()
+                .prefetch_related("street", "street__city")
+            )
+            print(f"Address: {_address}")
+            if _address:
+                return _address
+            else:
+                # TODO: Handle the case where the address does not exist.
+                ...
+
+        # return address_data
+
+    @classmethod
     async def search_address_gov(cls, address: str):
         """
         Search an address using the API Adresse from data.gouv.fr.
@@ -269,4 +298,4 @@ class Address(Model):
         return response, is_cached
 
     def __str__(self):
-        return f"{self.number} {self.street.name}"
+        return f"{self.number} {self.street}"

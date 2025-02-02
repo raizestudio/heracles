@@ -340,6 +340,8 @@ async def search_addresses(address: Annotated[str, Query(...)]):
     gov_address_match, is_cached = await Address.search_address_gov(address)
 
     if gov_address_match:
+        t = await Address.api_gov_adresse_connector(gov_address_match["features"][0])
+        print(t)
         return {"result": gov_address_match["features"], "is_cached": is_cached}
 
     return {"message": "searching addresses"}
