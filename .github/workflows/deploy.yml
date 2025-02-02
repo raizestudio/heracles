@@ -3,7 +3,7 @@ name: Deploy heracles to EC2
 on:
   push:
     branches:
-      - main  # Or whatever branch you want to deploy from
+      - preprod  # Or whatever branch you want to deploy from
 
 jobs:
   deploy:
