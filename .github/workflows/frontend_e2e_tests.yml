@@ -26,7 +26,9 @@ jobs:
           cache-dependency-path: frontend/package-lock.json
 
       - name: Install dependencies
-        run: npm ci --force
+        run: |
+          npm ci --force
+          npx playwright install --with-deps webkit --force  
         working-directory: frontend
 
       - name: Run e2e Tests (Playwright)
