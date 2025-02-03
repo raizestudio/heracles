@@ -1,0 +1,35 @@
+name: Frontend e2e Tests
+
+on:
+  push:
+    branches:
+      - main
+      - preprod
+      - prod
+
+  pull_request:
+
+jobs:
+  test:
+    name: Frontend e2e Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 23
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci --force
+        working-directory: frontend
+
+      - name: Run e2e Tests (Playwright)
+        run: npm run e2e
+        working-directory: frontend
+
