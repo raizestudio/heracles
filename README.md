@@ -4,6 +4,7 @@ L'application qui simplifie la mise en relation entre les particulier et les exp
 
 [![API Tests](https://github.com/raizestudio/heracles/actions/workflows/api_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/api_tests.yml)
 [![Frontend Unit Tests](https://github.com/raizestudio/heracles/actions/workflows/frontend_unit_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/frontend_unit_tests.yml)
+[![Frontend e2e Tests](https://github.com/raizestudio/heracles/actions/workflows/frontend_e2e_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/frontend_e2e_tests.yml)
 
 ## Installation
 
