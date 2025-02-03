@@ -30,6 +30,6 @@ jobs:
         working-directory: frontend
 
       - name: Run Unit Tests (Vitest)
-        run: npm run test:unit
+        run: npm run test
         working-directory: frontend
 
