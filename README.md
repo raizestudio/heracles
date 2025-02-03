@@ -3,6 +3,8 @@
 L'application qui simplifie la mise en relation entre les particulier et les experts en diagnostiques immobilier.
 
 [![API Tests](https://github.com/raizestudio/heracles/actions/workflows/api_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/api_tests.yml)
+[![Frontend Unit Tests](https://github.com/raizestudio/heracles/actions/workflows/frontend_unit_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/frontend_unit_tests.yml)
+
 ## Installation
 
 ### Backend
