@@ -1,6 +1,9 @@
+from typing import Annotated
+
 import jwt
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.security import OAuth2PasswordRequestForm
 from tortoise.exceptions import DoesNotExist
 
 from models.auth import Session, Token
@@ -42,17 +45,19 @@ async def register_user(user: UserCreate):
 
 
 @router.post("/authenticate")
-async def authenticate_user(authentication: AuthenticationSchema):
-    _user = await User.get(email=authentication.email)
-    token = generate_token(_user.email)
-    _token = await Token.create(token=token, user=_user)
+async def authenticate_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    _user = await User.get(email=form_data.username).prefetch_related("email")
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    if not check_password(authentication.password, _user.password):
+    if not check_password(form_data.password, _user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
-    return {"message": "User authenticated successfully", "user": _user, "token": token}
+    print(f"User: {_user}")
+    print(f"Mail: {_user.email}")
+    token = generate_token(str(_user.email))
+
+    return await Token(token=token, user=_user)
 
 
 @router.post("/authenticate/token")
@@ -78,7 +83,7 @@ async def create_session(session: SessionCreateSchema):
 
     Args:
         session (SessionCreateSchema): Session data
-        
+
     Returns:
         dict: Session data
     """
@@ -109,6 +114,4 @@ async def create_session(session: SessionCreateSchema):
         _session = await Session.create(ip_v4=session.ip_v4, ip_v6=session.ip_v6)
         created = True
 
-    
     return {"session": _session, "created": created}
-
