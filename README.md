@@ -2,13 +2,21 @@
 
 L'application qui simplifie la mise en relation entre les particulier et les experts en diagnostiques immobilier.
 
+## Tests
+
 [![API Tests](https://github.com/raizestudio/heracles/actions/workflows/api_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/api_tests.yml)
 [![Frontend Unit Tests](https://github.com/raizestudio/heracles/actions/workflows/frontend_unit_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/frontend_unit_tests.yml)
 [![Frontend e2e Tests](https://github.com/raizestudio/heracles/actions/workflows/frontend_e2e_tests.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/frontend_e2e_tests.yml)
 
+## Déploiement
+
+[![Deploy API Demo EC2](https://github.com/raizestudio/heracles/actions/workflows/deploy.yml/badge.svg)](https://github.com/raizestudio/heracles/actions/workflows/deploy.yml)
+![Deploy Client Vercel](https://deploy-badge.vercel.app/vercel/heracles-six)
+
 ## Installation
 
 ### Backend
+
 ```bash
 # Clone the repository
 git clone https://github.com/raizestudio/heracles.git
@@ -36,6 +44,7 @@ uvicorn main:app --reload
 ```
 
 ### Frontend
+
 ```bash
 # Navigate to the frontend directory
 cd frontend
