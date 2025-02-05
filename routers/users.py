@@ -1,8 +1,9 @@
-from typing import List
+from typing import Dict, List, Optional
 
 from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
 from tortoise.contrib.fastapi import HTTPNotFoundError
 from tortoise.exceptions import DoesNotExist, IntegrityError
+from tortoise.expressions import Q
 
 from models.users import User
 from schemas.users import UserCreate, UserRead
@@ -10,20 +11,45 @@ from schemas.users import UserCreate, UserRead
 router = APIRouter()
 
 
+class RequestFilters:
+    filters: Dict[str, str] = {}
+    order: Optional[str] = None
+    per_page: Optional[int] = None
+    page: Optional[int] = None
+
+
 @router.get("/", response_model=List[UserRead])
-async def get_users():
-    users = await User.all()
-    return users
+async def get_users(filters: Dict[str, str] = Depends(lambda: {})):
+    print(filters)
+    if not filters:
+        print("No filters")
+        _users = await User.all().values()
+        for user in _users:
+            user["email"] = user.pop("email_id")
+        return _users
+
+    query = Q()
+    for field, value in filters.items():
+        query &= Q(**{field: value})
+
+    _user = await User.filter(query).all()
+
+    if not _user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+    return _user
 
 
 @router.get(
-    "/{user_id}",
+    "/{user_email}",
     responses={status.HTTP_404_NOT_FOUND: {"description": "User not found"}},
 )
-async def get_user(user_id: int):
-    _user: UserRead = await User.get(id=user_id)
+async def get_user(user_email: str):
+    _user: UserRead = await User.get(email=user_email)
+
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
     return _user
 
 

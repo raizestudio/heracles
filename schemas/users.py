@@ -1,3 +1,4 @@
+import uuid
 from typing import Optional
 
 from pydantic import BaseModel
@@ -8,7 +9,7 @@ from pydantic.networks import EmailStr
 class UserRead(BaseModel):
     """Schema that defines the structure of the User model read."""
 
-    id: int
+    id: uuid.UUID = Field(..., description="Unique identifier of the user")
     username: str = Field(..., min_length=3, max_length=50, description="Username of the user")
     # password: str = Field(..., min_length=6, description="Password for the user")
     # password2: str = Field(None, min_length=6, description="Password for the user")

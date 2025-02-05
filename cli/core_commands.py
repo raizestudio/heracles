@@ -12,6 +12,7 @@ from tortoise.exceptions import DoesNotExist
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from config import Settings
+from models.auth import Permission
 from models.core import Menu
 from models.geo import Continent
 
@@ -148,6 +149,79 @@ def loadallfixtures(env: str = typer.Argument("prod")):
             await load_fixture(app, model, env)
 
     run_async(_load_all_fixtures())
+
+
+@app.command()
+def generateallpermissions():
+    """Generate all permissions"""
+
+    async def _generate_all_permissions():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": [f"models.{model}" for model in settings.models]},
+        )
+        models = [
+            # AGENCY
+            "agency",
+            # ASSETS
+            "asset",
+            # AUTH
+            "token",
+            "refresh",
+            "api_key",
+            "session",
+            # "permission",
+            # CLIENTS
+            "client",
+            # CORE
+            "menu",
+            # FINANCIAL
+            "tax",
+            "simulation",
+            "order",
+            # GEO
+            "language",
+            "currency",
+            "calling_code",
+            "phone_number",
+            "top_level_domain",
+            "email",
+            "continent",
+            "country",
+            "country_data",
+            "administrative_level_one",
+            "administrative_level_two",
+            "city_type",
+            "city",
+            "street_type",
+            "street",
+            "address",
+            # OPERATORS
+            "operator",
+            # SERVICES
+            "service",
+            # USERS
+            "user",
+            "user_preferences",
+            "user_security",
+            "profile",
+        ]
+        permissions = [
+            "create",
+            "read",
+            "update",
+            "delete",
+        ]
+
+        def combine_permissions(models, permissions):
+            return [f"{model}:{permission}" for model in models for permission in permissions]
+
+        for permission in combine_permissions(models, permissions):
+            await Permission.get_or_create(name=permission)
+
+        await Tortoise.close_connections()
+
+    run_async(_generate_all_permissions())
 
 
 if __name__ == "__main__":

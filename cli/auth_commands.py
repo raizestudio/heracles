@@ -9,7 +9,7 @@ from tortoise.exceptions import DoesNotExist
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
 from config import Settings
-from models.auth import Refresh, Session, Token
+from models.auth import Permission, Refresh, Session, Token
 from models.geo import Email
 from models.users import User
 from utils.crypt import (
@@ -150,6 +150,63 @@ def authenticatetoken(token: str, refresh: str):
 #         await Tortoise.close_connections()
 
 #     run_async(_list_users())
+
+
+@app.command()
+def createpermission(name: str):
+    """Create a permission."""
+
+    async def _create_permission():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": [f"models.{model}" for model in settings.models]},
+        )
+        permission = await Permission.create(name=name)
+        r_print(permission)
+
+        await Tortoise.close_connections()
+
+    run_async(_create_permission())
+
+
+@app.command()
+def listpermissions():
+    """List all permissions."""
+
+    async def _list_permissions():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": [f"models.{model}" for model in settings.models]},
+        )
+        permissions = await Permission.all()
+        for permission in permissions:
+            r_print(permission)
+
+        await Tortoise.close_connections()
+
+    run_async(_list_permissions())
+
+
+@app.command()
+def getpermission(name: str):
+    """Get permission information"""
+
+    async def _get_permission():
+        await Tortoise.init(
+            db_url=settings.db_url,
+            modules={"models": [f"models.{model}" for model in settings.models]},
+        )
+
+        try:
+            permission = await Permission.get(name=name)
+            r_print(permission)
+
+        except DoesNotExist:
+            r_print(f"[bold red]Permission[/bold red] [italic white]{name}[/italic white] [bold red]match does not exist![/bold red] :boom:")
+
+        await Tortoise.close_connections()
+
+    run_async(_get_permission())
 
 
 if __name__ == "__main__":

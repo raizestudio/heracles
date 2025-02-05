@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import os
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, Request
@@ -12,7 +13,6 @@ from pythonjsonlogger import jsonlogger
 
 import signals  # noqa
 from config import Settings
-from middlewares.authentication import jwt_auth_middleware
 from routers import assets, auth, core, geo, services, users
 from utils.db import Database
 
@@ -43,7 +43,13 @@ logger.addHandler(file_handler)
 logger_auth.addHandler(log_handler)
 logger_auth.addHandler(file_handler_auth)
 
-app = FastAPI(title=settings.app_name, version=settings.app_version)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+
+
+app = FastAPI(title=settings.app_name, version=settings.app_version, lifespan=lifespan)
 
 app.include_router(core.router, tags=["Core"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
@@ -55,6 +61,7 @@ app.include_router(geo.router, prefix="/geo", tags=["Geo"])
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 Database.init(app)
+
 
 origins = [
     "http://localhost",

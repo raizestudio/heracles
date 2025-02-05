@@ -1,13 +1,13 @@
 import logging
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Request, Security
+from fastapi import APIRouter, Depends, Request, Response, Security
 from fastapi.responses import JSONResponse
 
 from config import Settings
 from models.clients import Client
 from models.users import User
-from utils.permissions import get_current_user_or_client
+from utils.security import get_current_user_or_client
 
 settings = Settings()
 router = APIRouter()
@@ -17,13 +17,17 @@ logger = logging.getLogger("uvicorn")
 
 @router.get("/health")
 async def health():
-    response = {"status": "ok"}
-
-    return response
+    """
+    Just a simple health check endpoint.
+    """
+    return Response(status_code=200)
 
 
 @router.get("/info")
 async def info(request: Request, current_user_or_client: Annotated[User | Client, Depends(get_current_user_or_client)]):
+    """
+    Endpoint that return API app information.
+    """
     response = {
         "name": settings.app_name,
         "version": settings.app_version,
