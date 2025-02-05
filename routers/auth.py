@@ -1,3 +1,4 @@
+import logging
 from typing import Annotated
 
 import jwt
@@ -6,7 +7,8 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from tortoise.exceptions import DoesNotExist
 
-from models.auth import Session, Token
+from models.auth import ApiKey, Session, Token
+from models.clients import Client
 from models.users import User
 from schemas.auth import (
     AuthenticationSchema,
@@ -16,6 +18,7 @@ from schemas.auth import (
 from schemas.users import UserCreate, UserRead
 from utils.crypt import check_password, generate_token, hash_password
 
+logger = logging.getLogger("auth")
 router = APIRouter()
 
 
@@ -115,3 +118,18 @@ async def create_session(session: SessionCreateSchema):
         created = True
 
     return {"session": _session, "created": created}
+
+
+@router.get("/api-key")
+async def create_api_key():
+    """
+    Create an API key for the client.
+
+    Returns:
+        dict: API key data
+    """
+    print("Creating API key")
+    _client = await Client.get(id="3e3d978a-bcfd-401a-b768-041c94345a84")
+    token = generate_token({"client_id": str(_client.id)})
+    _api_key = await ApiKey.create(key=token, client=_client)
+    return {"api_key": _api_key.key}

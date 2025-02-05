@@ -20,6 +20,11 @@ class RoleEnum(str, Enum):
 class UserManager(Manager):
     """Manager for User model."""
 
+    async def has_permission(self, user_id: str, permission: str) -> bool:
+        """Check if a user has a permission."""
+        user = await self.get(id=user_id)
+        return await user.permissions.filter(name=permission).exists()
+
 
 class UserQuerySet(QuerySet):
     """QuerySet for User model."""
@@ -51,6 +56,13 @@ class User(Model):
     email = fields.ForeignKeyField("models.Email", related_name="user_emails", null=True)
     assets = fields.ManyToManyField("models.Asset", related_name="user_assets")
     service_requests = fields.ManyToManyField("models.ServiceRequest", related_name="user_service_requests")
+    permissions = fields.ManyToManyField("models.Permission", related_name="user_permissions")
+
+    all_objects = UserManager()
+
+    class Meta:
+        ordering = ["-created_at"]
+        
 
     def __str__(self):
         return self.username

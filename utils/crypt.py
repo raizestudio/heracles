@@ -1,6 +1,7 @@
 import base64
 import os
 from datetime import datetime, timedelta, timezone
+from typing import Any, Dict
 
 import jwt
 from bcrypt import checkpw as bcrypt_checkpw
@@ -15,7 +16,7 @@ def check_password(password: str, hashed: str) -> bool:
     return bcrypt_checkpw(password.encode(), hashed.encode())
 
 
-def generate_token(user_email: str, token_exp: int = 800):
+def generate_token(payload: Dict[str, Any], token_exp: int = 800):
     """
     Generate a token using jwt.
 
@@ -25,10 +26,8 @@ def generate_token(user_email: str, token_exp: int = 800):
     :return: The generated jwt token.
     """
     exp_time = datetime.now(tz=timezone.utc) + timedelta(seconds=token_exp)
-    payload = {
-        "exp": exp_time,
-        "email": user_email,
-    }
+    payload.update({"exp": exp_time})
+
     generated_token = jwt.encode(payload, "secret", algorithm="HS256")
 
     return generated_token

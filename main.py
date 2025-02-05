@@ -1,8 +1,14 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+import logging
 import os
+from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
+from pythonjsonlogger import jsonlogger
 
 import signals  # noqa
 from config import Settings
@@ -10,9 +16,34 @@ from middlewares.authentication import jwt_auth_middleware
 from routers import assets, auth, core, geo, services, users
 from utils.db import Database
 
-app = FastAPI(title=Settings().app_name, version=Settings().app_version)
+settings = Settings()
+logger = logging.getLogger("uvicorn")
+logger_auth = logging.getLogger("auth")
 
-# app.middleware("http")(jwt_auth_middleware)
+for folder in settings.required_dirs:
+    os.makedirs(folder, exist_ok=True)
+
+logger.setLevel(logging.DEBUG if settings.debug else logging.INFO)
+
+log_handler = logging.StreamHandler()
+file_handler = logging.handlers.RotatingFileHandler(
+    Path(settings.log_file_path) / settings.log_file_name, maxBytes=settings.log_file_max_bytes, backupCount=settings.log_backup_count
+)
+file_handler_auth = logging.handlers.RotatingFileHandler(Path(settings.log_file_path) / "auth.log", maxBytes=settings.log_file_max_bytes, backupCount=settings.log_backup_count)
+
+formatter_str = logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+formatter = jsonlogger.JsonFormatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+log_handler.setFormatter(formatter_str)
+file_handler.setFormatter(formatter)
+file_handler_auth.setFormatter(formatter)
+# ogging.getLogger("uvicorn.error").disabled = True
+# logging.getLogger("uvicorn.access").disabled = True
+logger.addHandler(log_handler)
+logger.addHandler(file_handler)
+logger_auth.addHandler(log_handler)
+logger_auth.addHandler(file_handler_auth)
+
+app = FastAPI(title=settings.app_name, version=settings.app_version)
 
 app.include_router(core.router, tags=["Core"])
 app.include_router(users.router, prefix="/users", tags=["Users"])
@@ -21,14 +52,6 @@ app.include_router(services.router, prefix="/services", tags=["Services"])
 app.include_router(assets.router, prefix="/assets", tags=["Assets"])
 app.include_router(geo.router, prefix="/geo", tags=["Geo"])
 
-try:
-    os.makedirs("uploads")
-    os.makedirs("uploads/avatars")
-    os.makedirs("uploads/documents")
-
-except FileExistsError:
-    pass
-
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 
 Database.init(app)
@@ -36,7 +59,7 @@ Database.init(app)
 origins = [
     "http://localhost",
     "http://localhost:3000",
-    f"http://{Settings().app_api_host}",
+    f"http://{settings.app_api_host}",
 ]
 
 app.add_middleware(
@@ -48,6 +71,7 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-async def read_root():
-    return {"message": f"{Settings().app_name} is running"}
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    logger.error(f"Unhandled error: {exc}", exc_info=True)
+    return JSONResponse(status_code=500, content={"message": "Internal Server Error"})
