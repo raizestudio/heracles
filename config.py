@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     cache_host: str = "localhost"
     cache_port: int = 6379
     cache_db: int = 0
+    cache_ttl: int = 60
     # RABBITMQ
     rabbitmq_user: str = "heracles"
     rabbitmq_password: str = "heracles"

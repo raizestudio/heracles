@@ -58,7 +58,7 @@ async def authenticate_user(form_data: Annotated[OAuth2PasswordRequestForm, Depe
 
     print(f"User: {_user}")
     print(f"Mail: {_user.email}")
-    token = generate_token(str(_user.email))
+    token = generate_token({"email": str(_user.email)})
 
     return await Token(token=token, user=_user)
 
@@ -129,7 +129,7 @@ async def create_api_key():
         dict: API key data
     """
     print("Creating API key")
-    _client = await Client.get(id="3e3d978a-bcfd-401a-b768-041c94345a84")
+    _client = await Client.create(name="aa")
     token = generate_token({"client_id": str(_client.id)})
     _api_key = await ApiKey.create(key=token, client=_client)
     return {"api_key": _api_key.key}

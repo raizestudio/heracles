@@ -52,6 +52,9 @@ def decode_token(token: str):
     except jwt.InvalidSignatureError:
         return False
 
+    except jwt.DecodeError:
+        return False
+
 
 def generate_refresh_token(length: int = 128):
     """

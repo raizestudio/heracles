@@ -11,8 +11,8 @@ from models.users import User
 from utils.crypt import decode_token
 
 logger = logging.getLogger("auth")
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token", auto_error=False)
+api_key_header = APIKeyHeader(name="X-API-KEY", auto_error=False)
 
 
 async def get_current_client(api_key: Annotated[str, Depends(api_key_header)]):
@@ -35,9 +35,9 @@ async def get_current_client(api_key: Annotated[str, Depends(api_key_header)]):
             logger.warning(f"Attempt to access with expired API key: {api_key}")
             raise credentials_exception
 
-        _api_key = await ApiKey.get(key=api_key)
+        _api_key = await ApiKey.get(key=api_key).prefetch_related("client")
 
-        return _api_key
+        return _api_key.client
 
     except DoesNotExist:
         logger.warning(f"Attempt to access with invalid API key: {api_key}")
@@ -74,20 +74,20 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
 
 async def get_current_user_or_client(
-    token: Annotated[Optional[str], Depends(oauth2_scheme)],
-    api_key: Annotated[Optional[str], Security(api_key_header)],
+    api_key: Annotated[Optional[str], Depends(api_key_header)] = None,
+    token: Annotated[Optional[str], Depends(oauth2_scheme)] = None,
 ):
     """
     Unified function to authenticate either a user or an API client.
     - If an API key is present, authenticate the client.
     - Otherwise, authenticate as a regular user.
     """
-    print(f"Token: {token}")
-    logger.warning(f"Token: {token}")
-    logger.warning(f"API Key: {api_key}")
     if api_key:
+        logger.warning(f"API Key: {api_key}")
         return await get_current_client(api_key)
+
     elif token:
+        logger.warning(f"Token: {token}")
         return await get_current_user(token)
 
     raise HTTPException(
@@ -96,11 +96,11 @@ async def get_current_user_or_client(
     )
 
 
-def is_admin(user: dict = Depends(get_current_user)):
-    """Check if user is an admin."""
-    if user["role"] != "admin":
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="You do not have permission to perform this action.",
-        )
-    return True
+# def is_admin(user: dict = Depends(get_current_user)):
+#     """Check if user is an admin."""
+#     if user["role"] != "admin":
+#         raise HTTPException(
+#             status_code=status.HTTP_403_FORBIDDEN,
+#             detail="You do not have permission to perform this action.",
+#         )
+#     return True

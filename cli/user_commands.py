@@ -26,6 +26,8 @@ def createuser(username: str, password: str, email: str, first_name: str, last_n
             modules={
                 "models": [
                     "models.users",
+                    "models.auth",
+                    "models.clients",
                     "models.geo",
                     "models.assets",
                     "models.services",
