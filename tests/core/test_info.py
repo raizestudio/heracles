@@ -14,10 +14,9 @@ app.include_router(router)
 
 
 @pytest.mark.asyncio
-async def test_health():
+async def test_info():
     async with AsyncClient(base_url="http://test", transport=ASGITransport(app=app)) as client:
-        response = await client.get("/health")
+        response = await client.get("/info", headers={"X-API-KEY": "test"})
 
-    assert response.status_code == 200
-
-
+    assert response.status_code == 401
+    assert response.json() == {"detail": "Could not validate credentials"}
