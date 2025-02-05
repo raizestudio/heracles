@@ -79,6 +79,9 @@ class Email(Model):
 
     email = fields.CharField(pk=True, max_length=255, unique=True)
 
+    def __str__(self):
+        return self.email
+
 
 class Continent(Model):
     """Model for continents."""

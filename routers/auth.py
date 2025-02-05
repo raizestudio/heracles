@@ -1,9 +1,14 @@
+import logging
+from typing import Annotated
+
 import jwt
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.encoders import jsonable_encoder
+from fastapi.security import OAuth2PasswordRequestForm
 from tortoise.exceptions import DoesNotExist
 
-from models.auth import Session, Token
+from models.auth import ApiKey, Session, Token
+from models.clients import Client
 from models.users import User
 from schemas.auth import (
     AuthenticationSchema,
@@ -13,6 +18,7 @@ from schemas.auth import (
 from schemas.users import UserCreate, UserRead
 from utils.crypt import check_password, generate_token, hash_password
 
+logger = logging.getLogger("auth")
 router = APIRouter()
 
 
@@ -42,17 +48,19 @@ async def register_user(user: UserCreate):
 
 
 @router.post("/authenticate")
-async def authenticate_user(authentication: AuthenticationSchema):
-    _user = await User.get(email=authentication.email)
-    token = generate_token(_user.email)
-    _token = await Token.create(token=token, user=_user)
+async def authenticate_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
+    _user = await User.get(email=form_data.username).prefetch_related("email")
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
-    if not check_password(authentication.password, _user.password):
+    if not check_password(form_data.password, _user.password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
-    return {"message": "User authenticated successfully", "user": _user, "token": token}
+    print(f"User: {_user}")
+    print(f"Mail: {_user.email}")
+    token = generate_token({"email": str(_user.email)})
+
+    return await Token(token=token, user=_user)
 
 
 @router.post("/authenticate/token")
@@ -78,7 +86,7 @@ async def create_session(session: SessionCreateSchema):
 
     Args:
         session (SessionCreateSchema): Session data
-        
+
     Returns:
         dict: Session data
     """
@@ -109,6 +117,19 @@ async def create_session(session: SessionCreateSchema):
         _session = await Session.create(ip_v4=session.ip_v4, ip_v6=session.ip_v6)
         created = True
 
-    
     return {"session": _session, "created": created}
 
+
+@router.get("/api-key")
+async def create_api_key():
+    """
+    Create an API key for the client.
+
+    Returns:
+        dict: API key data
+    """
+    print("Creating API key")
+    _client = await Client.create(name="aa")
+    token = generate_token({"client_id": str(_client.id)})
+    _api_key = await ApiKey.create(key=token, client=_client)
+    return {"api_key": _api_key.key}

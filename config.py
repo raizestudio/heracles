@@ -9,6 +9,11 @@ class Settings(BaseSettings):
     app_version: str = "0.0.0"
     app_api_version: str = "v1"
     app_api_host: str = "localhost"
+    # LOGGING
+    log_file_path: str = "logs"
+    log_file_name: str = "api.log"
+    log_file_max_bytes: int = 5 * 1024 * 1024
+    log_backup_count: int = 3
     # DB
     db_user: str = "heracles"
     db_password: str = "heracles"
@@ -20,6 +25,7 @@ class Settings(BaseSettings):
     cache_host: str = "localhost"
     cache_port: int = 6379
     cache_db: int = 0
+    cache_ttl: int = 60
     # RABBITMQ
     rabbitmq_user: str = "heracles"
     rabbitmq_password: str = "heracles"
@@ -31,11 +37,19 @@ class Settings(BaseSettings):
     models: List[str] = [
         "users",
         "auth",
+        "clients",
         "geo",
         "assets",
         "services",
         "operators",
         "agency",
+    ]
+
+    required_dirs: List[str] = [
+        "uploads",
+        "uploads/avatars",
+        "uploads/documents",
+        "logs",
     ]
 
     class Config:
