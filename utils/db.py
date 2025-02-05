@@ -1,3 +1,4 @@
+import asyncpg
 from tortoise.contrib.fastapi import register_tortoise
 
 from config import Settings
@@ -22,3 +23,10 @@ class Database:
             generate_schemas=True,
             add_exception_handlers=True,
         )
+
+    @staticmethod
+    async def create_test_db():
+        conn = await asyncpg.connect(user=settings.db_user, password=settings.db_password, database="postgres", host=settings.db_host)
+        await conn.execute(f"DROP DATABASE IF EXISTS {settings.db_test_name};")
+        await conn.execute(f"CREATE DATABASE {settings.db_test_name};")
+        await conn.close()

@@ -21,6 +21,8 @@ class Settings(BaseSettings):
     db_port: int = 5432
     db_name: str = "heracles"
     db_url: str = f"postgres://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    db_test_name: str = "heracles_test"
+    db_url_test: str = f"postgres://{db_user}:{db_password}@{db_host}:{db_port}/{db_test_name}"
     # CACHE
     cache_host: str = "localhost"
     cache_port: int = 6379

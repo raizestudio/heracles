@@ -20,7 +20,7 @@ app = typer.Typer()
 settings = Settings()
 console = Console()
 
-AVAILABLE_FIXTURES = [
+FIXTURES = [
     "geo.language",
     "geo.currency",
     "geo.continent",
@@ -143,7 +143,7 @@ def loadallfixtures(env: str = typer.Argument("prod")):
     """
 
     async def _load_all_fixtures():
-        for fixture in AVAILABLE_FIXTURES:
+        for fixture in FIXTURES:
             print(f"Loading fixture: {fixture}")
             app, model = fixture.split(".")
             await load_fixture(app, model, env)
