@@ -1,0 +1,23 @@
+# elasticsearch/config/elasticsearch.yml
+cluster.name: "docker-cluster"
+network.host: 0.0.0.0
+discovery.type: single-node
+
+# Enable security
+xpack.security.enabled: false
+# xpack.security.transport.ssl.enabled: true
+# xpack.security.transport.ssl.key: /usr/share/elasticsearch/config/certs/elastic-certificates.key
+# xpack.security.transport.ssl.verification_mode: certificate
+
+# Memory settings (adjust as needed)
+bootstrap.memory_lock: true
+
+# Authentication settings
+# xpack.security.authc:
+  # realms:
+  #   native.native1:
+  #     order: 0
+  # reserved_realm:
+  #   enabled: true
+  # anonymous:
+  #   enabled: true

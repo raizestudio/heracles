@@ -106,12 +106,7 @@ def resetdb():
             db_url=settings.db_url,
             modules={
                 "models": [
-                    "models.core",
-                    "models.users",
-                    "models.services",
-                    "models.assets",
-                    "models.auth",
-                    "models.geo",
+                    f"models.{model}" for model in settings.models
                 ]
             },
         )

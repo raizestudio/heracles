@@ -23,7 +23,7 @@ async def health():
     return Response(status_code=200)
 
 
-@router.get("/info")
+@router.get("/info", responses={200: {"description": "API information"}, 401: {"description": "Unauthorized"}})
 async def info(request: Request, current_user_or_client: Annotated[User | Client, Depends(get_current_user_or_client)]):
     """
     Endpoint that return API app information.

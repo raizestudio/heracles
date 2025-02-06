@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status, Request
 from tortoise.contrib.fastapi import HTTPNotFoundError
 from tortoise.exceptions import DoesNotExist, IntegrityError
 from tortoise.expressions import Q
@@ -18,11 +18,13 @@ class RequestFilters:
     page: Optional[int] = None
 
 
-@router.get("/", response_model=List[UserRead])
-async def get_users(filters: Dict[str, str] = Depends(lambda: {})):
-    print(filters)
+@router.get("/", response_model=List[UserRead], responses={200: {"description": "List of users"}})
+async def get_users(request: Request):
+    """
+    Retrieve a list of users, according to filters provided.
+    """
+    filters = dict(request.query_params)
     if not filters:
-        print("No filters")
         _users = await User.all().values()
         for user in _users:
             user["email"] = user.pop("email_id")
@@ -32,12 +34,12 @@ async def get_users(filters: Dict[str, str] = Depends(lambda: {})):
     for field, value in filters.items():
         query &= Q(**{field: value})
 
-    _user = await User.filter(query).all()
+    _users = await User.filter(query).all().values("id", "username", "email_id", "first_name", "last_name", "is_active", "avatar")
 
-    if not _user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    for user in _users:
+        user["email"] = user.pop("email_id")
 
-    return _user
+    return _users
 
 
 @router.get(
@@ -45,6 +47,9 @@ async def get_users(filters: Dict[str, str] = Depends(lambda: {})):
     responses={status.HTTP_404_NOT_FOUND: {"description": "User not found"}},
 )
 async def get_user(user_email: str):
+    """
+    Retrieve a user.
+    """
     _user: UserRead = await User.get(email=user_email)
 
     if not _user:
@@ -58,6 +63,9 @@ async def get_user(user_email: str):
     responses={400: {"description": "User with this email or username already exists"}},
 )
 async def create_user(user: UserCreate):
+    """
+    Create a user with the provided data.
+    """
     try:
         new_user = await User.create(
             username=user.username,
@@ -79,6 +87,9 @@ async def create_user(user: UserCreate):
     responses={404: {"description": "User not found"}},
 )
 async def update_user(user_id: int, user: UserCreate):
+    """
+    Update a user with the provided data.
+    """
     _user: UserRead = await User.get(id=user_id)
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -97,6 +108,9 @@ async def update_user(user_id: int, user: UserCreate):
     responses={404: {"description": "User not found"}},
 )
 async def patch_user(user_id: int, user: UserCreate):
+    """
+    Patch a user with the provided data.
+    """
     _user: UserRead = await User.get(id=user_id)
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
@@ -115,6 +129,9 @@ async def patch_user(user_id: int, user: UserCreate):
     responses={404: {"description": "User not found"}},
 )
 async def delete_user(user_id: int):
+    """
+    Delete a user.
+    """
     _user: UserRead = await User.get(id=user_id)
     if not _user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")

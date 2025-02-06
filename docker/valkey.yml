@@ -8,6 +8,14 @@ services:
       - DATABASE_URL=postgres://user:password@db:6379/valkeydb
       - VALKEY_SECRET_KEY=your_secret_key
 
+  redis-insight:
+    image: redis/redisinsight:latest
+    container_name: redis-insight
+    ports:
+      - "8001:8001"
+    networks:
+      - valkey_network
+    
 
 volumes:
   valkey-db-data:

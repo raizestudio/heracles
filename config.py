@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     debug: bool = True
 
     models: List[str] = [
+        "core",
         "users",
         "auth",
         "clients",
