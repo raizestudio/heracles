@@ -7,7 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from tortoise.exceptions import DoesNotExist
 
-from models.auth import ApiKey, Session, Token
+from models.auth import ApiKey, Refresh, Session, Token
 from models.clients import Client
 from models.users import User
 from schemas.auth import (
@@ -16,7 +16,12 @@ from schemas.auth import (
     SessionCreateSchema,
 )
 from schemas.users import UserCreate, UserRead
-from utils.crypt import check_password, generate_token, hash_password
+from utils.crypt import (
+    check_password,
+    generate_refresh_token,
+    generate_token,
+    hash_password,
+)
 
 logger = logging.getLogger("auth")
 router = APIRouter()
@@ -47,20 +52,29 @@ async def register_user(user: UserCreate):
     return {"message": "User created successfully", "user": created}
 
 
-@router.post("/authenticate")
+@router.post("/authenticate", responses={status.HTTP_401_UNAUTHORIZED: {"description": "Unauthorized"}})
 async def authenticate_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
-    _user = await User.get(email=form_data.username).prefetch_related("email")
-    if not _user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
-
-    if not check_password(form_data.password, _user.password):
+    """
+    Authenticate a user with the provided credentials.
+    """
+    try:
+        _user = await User.get(email=form_data.username).prefetch_related("email")
+    except DoesNotExist:
+        logger.warning(f"Authentication attempt for {form_data.username}, user was not found")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
-    print(f"User: {_user}")
-    print(f"Mail: {_user.email}")
-    token = generate_token({"email": str(_user.email)})
+    if not check_password(form_data.password, _user.password):
+        logger.warning(f"Authentication attempt for {form_data.username}, user was denied")
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
-    return await Token(token=token, user=_user)
+    _token = await Token(token=generate_token({"email": str(_user.email)}), user=_user)
+    _refresh = await Refresh(token=generate_refresh_token(), user=_user)
+
+    logger.info(f"User {str(_user.id)} authenticated successfully")
+    return {
+        "token": _token.token,
+        "refresh": _refresh.token,
+    }
 
 
 @router.post("/authenticate/token")
