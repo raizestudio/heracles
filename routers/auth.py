@@ -7,7 +7,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from tortoise.exceptions import DoesNotExist
 
-from models.auth import ApiKey, Refresh, Session, Token
+from models.auth import ApiKey, Refresh, Session, Token, TokenBlacklist
 from models.clients import Client
 from models.users import User
 from schemas.auth import (
@@ -18,6 +18,7 @@ from schemas.auth import (
 from schemas.users import UserCreate, UserRead
 from utils.crypt import (
     check_password,
+    decode_token,
     generate_refresh_token,
     generate_token,
     hash_password,
@@ -52,43 +53,37 @@ async def register_user(user: UserCreate):
     return {"message": "User created successfully", "user": created}
 
 
-@router.post("/authenticate", responses={status.HTTP_401_UNAUTHORIZED: {"description": "Unauthorized"}})
+@router.post("/authenticate", responses={status.HTTP_200_OK: {"description": "Successful connection"}, status.HTTP_401_UNAUTHORIZED: {"description": "Unauthorized"}})
 async def authenticate_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()]):
     """
-    Authenticate a user with the provided credentials.
+    Authenticate a user with the provided credentials, will always issue a new token and refresh.
+    If token exists it will be blacklisted.
     """
     try:
         _user = await User.get(email=form_data.username).prefetch_related("email")
+
     except DoesNotExist:
-        logger.warning(f"Authentication attempt for {form_data.username}, user was not found")
+        logger.warning(f"Authentication attempt with missing user", extra={"user_email": form_data.username, "password": form_data.password})
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
     if not check_password(form_data.password, _user.password):
-        logger.warning(f"Authentication attempt for {form_data.username}, user was denied")
+        logger.warning(f"Authentication attempt for {form_data.username}, user was denied", extra={"user_email": form_data.username, "password": form_data.password})
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
 
-    _token = await Token(token=generate_token({"email": str(_user.email)}), user=_user)
-    _refresh = await Refresh(token=generate_refresh_token(), user=_user)
+    _token, created = await Token.get_or_create(user=_user, defaults={"token": generate_token({"email": str(_user.email)})})
+    _refresh, created = await Refresh.get_or_create(user=_user, defaults={"token": generate_refresh_token()})
+
+    if not created:
+        _token_blacklist, tk_created = await TokenBlacklist.get_or_create(token=_token.token)
+        await _token.delete()
+        await _refresh.delete()
+        _token = await Token.create(token=generate_token({"email": str(_user.email)}, 10), user=_user)
+        _refresh = await Refresh.create(token=generate_refresh_token(), user=_user)
 
     logger.info(f"User {str(_user.id)} authenticated successfully")
     return {
         "token": _token.token,
         "refresh": _refresh.token,
-    }
-
-
-@router.post("/authenticate/token")
-async def authenticate_token_user(authentication: AuthenticationTokenSchema):
-    _token = await Token.get(token=authentication.token).prefetch_related("user")
-    user_data = UserRead.model_validate(_token.user)
-
-    if not _token:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Token match not found")
-
-    return {
-        "message": "User authenticated successfully",
-        "user": user_data,
-        "token": _token.token,
     }
 
 
@@ -114,6 +109,7 @@ async def create_session(session: SessionCreateSchema):
     if session.ip_v4:
         try:
             _session = await Session.get(ip_v4=session.ip_v4)
+
         except DoesNotExist:
             _session = await Session.create(ip_v4=session.ip_v4)
             created = True

@@ -47,6 +47,16 @@ class Token(Model):
         return self.token
 
 
+class TokenBlacklist(Model):
+    """Model for blacklisted tokens."""
+
+    token = fields.CharField(max_length=255, pk=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.token
+
+
 class Refresh(Model):
     """Model for refresh tokens"""
 

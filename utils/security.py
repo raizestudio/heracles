@@ -48,6 +48,27 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
     """
     Get the current user from the token.
     """
+    # TODO:
+    # payload = decode_token(_token.token)
+    # if not payload:
+    #     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+    # if "error" in payload:
+    #     if payload["error"] == "expired":
+    #         if _refresh.is_valid():
+    #             _token_blacklist, tk_created = await TokenBlacklist.get_or_create(token=_token.token)
+    #             await _token.delete()
+    #             _token = await Token.create(token=generate_token({"email": str(_user.email)}, 10), user=_user)
+
+    #         else:
+    #             _token_blacklist, tk_created = await TokenBlacklist.get_or_create(token=_token.token)
+    #             await _token.delete()
+    #             await _refresh.delete()
+
+    #             return HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
+
+    #     else:
+    #         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Unauthorized")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -68,8 +89,8 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]):
 
         return _user
 
-    except InvalidTokenError:
-        logger.warning(f"Attempt to access with invalid token: {token}")
+    except DoesNotExist:
+        logger.warning(f"Attempt to access with missing user.")
         raise credentials_exception
 
 

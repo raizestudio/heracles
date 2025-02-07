@@ -1,6 +1,3 @@
-import sys
-from pathlib import Path
-
 import pytest
 from fastapi import FastAPI
 from httpx import ASGITransport, AsyncClient
@@ -50,12 +47,12 @@ async def test_client():
     return _api_key.key, str(_client.id)
 
 
-@pytest.fixture
-async def test_user():
-    """Create a test user token."""
-    _email = await Email.create(email="test@test.io")
-    _user = await User.create(username="test_user", first_name="Coco", last_name="Jojo", email=_email, password="test")
-    return generate_token({"email": str(_user.email)}), str(_user.id)
+# @pytest.fixture
+# async def test_user():
+#     """Create a test user token."""
+#     _email = await Email.create(email="test@test.io")
+#     _user = await User.create(username="test_user", first_name="Coco", last_name="Jojo", email=_email, password="test")
+#     return generate_token({"email": str(_user.email)}), str(_user.id)
 
 
 class TestInfoRoutes:
