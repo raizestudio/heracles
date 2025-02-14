@@ -47,13 +47,24 @@ class Token(Model):
         return self.token
 
 
+class TokenBlacklist(Model):
+    """Model for blacklisted tokens."""
+
+    token = fields.CharField(max_length=255, pk=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.token
+
+
 class Refresh(Model):
     """Model for refresh tokens"""
 
     token = fields.CharField(max_length=255, pk=True)
-    user = fields.ForeignKeyField("models.User", related_name="refresh_tokens")
     created_at = fields.DatetimeField(auto_now_add=True)
     expire_at = fields.DatetimeField(default=default_expire_at)
+
+    user = fields.ForeignKeyField("models.User", related_name="refresh_tokens")
 
     def is_valid(self) -> bool:
         """

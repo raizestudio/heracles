@@ -34,11 +34,11 @@ async def info(request: Request, current_user_or_client: Annotated[User | Client
         "version_api": settings.app_api_version,
     }
     if isinstance(current_user_or_client, User):
-        logger.warning(f"User {str(current_user_or_client.id)} accessed the {request.url} endpoint")
+        logger.info(f"User {str(current_user_or_client.id)} accessed the {request.url} endpoint")
         response.update({"user": str(current_user_or_client.id)})
 
     elif isinstance(current_user_or_client, Client):
-        logger.warning(f"Client {str(current_user_or_client.id)} accessed the {request.url} endpoint")
+        logger.info(f"Client {str(current_user_or_client.id)} accessed the {request.url} endpoint")
         response.update({"client": str(current_user_or_client.id)})
 
     return JSONResponse(content=response)

@@ -16,7 +16,7 @@ def check_password(password: str, hashed: str) -> bool:
     return bcrypt_checkpw(password.encode(), hashed.encode())
 
 
-def generate_token(payload: Dict[str, Any], token_exp: int = 800):
+def generate_token(payload: Dict[str, Any], token_exp: int = 10):
     """
     Generate a token using jwt.
 
@@ -44,16 +44,20 @@ def decode_token(token: str):
     try:
         decoded_token = jwt.decode(token, "secret", algorithms="HS256")
 
+        print(f"Decoded token: {decoded_token}")
         return decoded_token
 
     except jwt.ExpiredSignatureError:
         return {"error": "expired"}
 
     except jwt.InvalidSignatureError:
-        return False
+        return {"error": "invalid_signature"}
 
     except jwt.DecodeError:
-        return False
+        return {"error": "invalid_decode"}
+
+    except jwt.InvalidTokenError:
+        return {"error": "invalid_token"}
 
 
 def generate_refresh_token(length: int = 128):
