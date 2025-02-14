@@ -3,22 +3,16 @@ from typing import Annotated
 
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.encoders import jsonable_encoder
 from fastapi.security import OAuth2PasswordRequestForm
 from tortoise.exceptions import DoesNotExist
 
 from models.auth import ApiKey, Refresh, Session, Token, TokenBlacklist
 from models.clients import Client
 from models.users import User
-from schemas.auth import (
-    AuthenticationSchema,
-    AuthenticationTokenSchema,
-    SessionCreateSchema,
-)
+from schemas.auth import SessionCreateSchema
 from schemas.users import UserCreate, UserRead
 from utils.crypt import (
     check_password,
-    decode_token,
     generate_refresh_token,
     generate_token,
     hash_password,

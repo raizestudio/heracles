@@ -1,19 +1,21 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import useSWRMutation from "swr/mutation";
-import { MapContainer, TileLayer, useMap, Marker, Popup } from "react-leaflet";
+import dynamic from "next/dynamic";
 
 // Components
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Dialog, DialogTrigger, DialogHeader, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+// import DialogComponent from "@/app/components/dialog/DialogComponent";
+import PSAssetSelectionSummaryComponent from "@/app/components/simulation/patron/asset_selection/PSAssetSelectionSummaryComponent";
+import PSAssetSelectionInfoComponent from "@/app/components/simulation/patron/asset_selection/PSAssetSelectionInfoComponent";
+
+export const LazyMap = dynamic(
+  () => import("@/app/components/map/MapComponent"),
+  { ssr: false }
+);
 
 // Fetcher
 import { fetcher } from "@/app/utils/fetcher";
@@ -56,9 +58,6 @@ const PatronSimulationAssetSelectionComponent: React.FC<
     });
   const [canAddPreviewFeature, setCanAddPreviewFeature] =
     useState<boolean>(false);
-  const [currentMapLocation, setCurrentMapLocation] = useState<
-    [number, number] | null
-  >(null);
 
   const searchUrl = new URL(
     `${process.env.NEXT_PUBLIC_API_BASE_URL}/geo/addresses/search`
@@ -97,22 +96,6 @@ const PatronSimulationAssetSelectionComponent: React.FC<
   }, [searchAddress]);
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentMapLocation([latitude, longitude]); // Store the user's coordinates
-        },
-        (error) => {
-          console.error("Error getting geolocation:", error);
-          // Fallback to a default location (optional)
-          setCurrentMapLocation([43.8, 5.383473]); // Default fallback
-        }
-      );
-    }
-  }, []);
-
-  useEffect(() => {
     console.log(`DEBUG: featurePreviewData`, featurePreviewData);
     console.log(`DEBUG: canAddPreviewFeature 1`, canAddPreviewFeature);
     if (
@@ -135,28 +118,9 @@ const PatronSimulationAssetSelectionComponent: React.FC<
   useEffect(() => {
     if (selectedFeatures.length > 0) {
       updateValidSteps();
-    } 
+    }
   }, [selectedFeatures]);
 
-  const UpdateMapCenter = () => {
-    const map = useMap();
-    useEffect(() => {
-      if (featurePreview) {
-        map.setView(
-          [
-            featurePreview.geometry.coordinates[1],
-            featurePreview.geometry.coordinates[0],
-          ],
-          map.getZoom()
-        );
-      } else if (currentMapLocation) {
-        map.setView(currentMapLocation, map.getZoom());
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [featurePreview, map]);
-
-    return null;
-  };
   return (
     <div className="flex grow gap-8">
       <div className="grow">
@@ -186,319 +150,42 @@ const PatronSimulationAssetSelectionComponent: React.FC<
                   </Button>
                 ))}
               </div>
-              <Button
-                variant={"ghost"}
-                className="self-end text-sm text-gray-500 px-1 py-0.5 h-auto"
-              >
-                Je ne trouve pas mon adresse
-              </Button>
+              <Dialog>
+                <DialogTrigger className="self-end">
+                  <Button
+                    variant={"ghost"}
+                    className="self-end text-sm text-gray-500 px-1 py-0.5 h-auto"
+                  >
+                    Je ne trouve pas mon adresse
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Paramètres supplémentaires recherche adresse</DialogTitle>
+                  </DialogHeader>
+                  <DialogDescription></DialogDescription>
+                </DialogContent>
+              </Dialog>
             </div>
-            {featurePreview && (
-              <div className="flex flex-col gap-6 grow">
-                <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-semibold">Ajouter un bien</h2>
-                  <span>{featurePreview?.properties.label}</span>
-                </div>
-                <div className="flex flex-col gap-4 grow">
-                  <div>
-                    <span>Vous souhaitez:</span>
-                    <div className="flex gap-2">
-                      <Button
-                        variant={
-                          featurePreviewData.transationType !== "sell"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            transationType: "sell",
-                          })
-                        }
-                      >
-                        Vendre
-                      </Button>
-                      <Button
-                        variant={
-                          featurePreviewData.transationType !== "rent"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            transationType: "rent",
-                          })
-                        }
-                      >
-                        Louer
-                      </Button>
-                      <Button
-                        variant={
-                          featurePreviewData.transationType !== "renovate"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            transationType: "renovate",
-                          })
-                        }
-                      >
-                        Rénover
-                      </Button>
-                    </div>
-                  </div>
-                  <div>
-                    <span>Type de bien:</span>
-                    <div className="flex gap-2">
-                      <Button
-                        variant={
-                          featurePreviewData.assetType !== "house"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            assetType: "house",
-                          })
-                        }
-                      >
-                        Maison
-                      </Button>
-                      <Button
-                        variant={
-                          featurePreviewData.assetType !== "apartment"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            assetType: "apartment",
-                          })
-                        }
-                      >
-                        Appartement
-                      </Button>
-                      <Button
-                        variant={
-                          featurePreviewData.assetType !== "other"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            assetType: "other",
-                          })
-                        }
-                      >
-                        Autre
-                      </Button>
-                    </div>
-                  </div>
-                  <div>
-                    <span>Nombre de pièces:</span>
-                    <Select
-                      onValueChange={(value) =>
-                        setFeaturePreviewData({
-                          ...featurePreviewData,
-                          totalRooms: parseInt(value) + 1,
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="1" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 10 }, (_, i) => (
-                          <SelectItem key={i} value={i.toString()}>
-                            {i + 1}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <span>Étage:</span>
-                    <Input
-                      type="number"
-                      placeholder="0"
-                      value={featurePreviewData.floor}
-                      onChange={(e) =>
-                        setFeaturePreviewData({
-                          ...featurePreviewData,
-                          floor: parseInt(e.target.value),
-                        })
-                      }
-                    />
-                  </div>
-                  <div>
-                    <span>Date permis de construire:</span>
-                    <div className="flex gap-2">
-                      <Button
-                        variant={
-                          featurePreviewData.constructionDate !== "before1949"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            constructionDate: "before1949",
-                          })
-                        }
-                      >
-                        Avant 01/01/1949
-                      </Button>
-                      <Button
-                        variant={
-                          featurePreviewData.constructionDate !==
-                          "between1949and1997"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            constructionDate: "between1949and1997",
-                          })
-                        }
-                      >
-                        Entre 1949 et 01/07/1997
-                      </Button>
-                      <Button
-                        variant={
-                          featurePreviewData.constructionDate !== "after1997"
-                            ? "secondary"
-                            : "default"
-                        }
-                        className="w-full"
-                        onClick={() =>
-                          setFeaturePreviewData({
-                            ...featurePreviewData,
-                            constructionDate: "after1997",
-                          })
-                        }
-                      >
-                        Après 01/07/1997
-                      </Button>
-                    </div>
-                  </div>
-                  <div>
-                    <span>Installation électrique:</span>
-                    <Select
-                      onValueChange={(value) =>
-                        setFeaturePreviewData({
-                          ...featurePreviewData,
-                          electricalInstallation: value,
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Sélectionner option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="less15">
-                          Oui, moins de 15 ans.
-                        </SelectItem>
-                        <SelectItem value="more15">
-                          Oui, plus de 15 ans.
-                        </SelectItem>
-                        <SelectItem value="no">Non.</SelectItem>
-                        <SelectItem value="unknown">Je ne sais pas.</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <span>Installation gaz:</span>
-                    <Select
-                      onValueChange={(value) =>
-                        setFeaturePreviewData({
-                          ...featurePreviewData,
-                          gasInstallation: value,
-                        })
-                      }
-                    >
-                      <SelectTrigger className="w-[180px]">
-                        <SelectValue placeholder="Sélectionner option" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="less15">
-                          Oui, moins de 15 ans.
-                        </SelectItem>
-                        <SelectItem value="more15">
-                          Oui, plus de 15 ans.
-                        </SelectItem>
-                        <SelectItem value="no">Non.</SelectItem>
-                        <SelectItem value="unknown">Je ne sais pas.</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-                <div className="flex justify-end gap-2">
-                  <Button onClick={() => setFeaturePreview(null)}>
-                    Annuler
-                  </Button>
-                  <Button disabled={!canAddPreviewFeature} onClick={() => setSelectedFeatures([...selectedFeatures, featurePreview])}>
-                    Ajouter {canAddPreviewFeature}
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-          <MapContainer
-            center={
-              featurePreview
-                ? [
-                    featurePreview.geometry.coordinates[1],
-                    featurePreview.geometry.coordinates[0],
-                  ]
-                : [43.8, 5.383473]
-            }
-            zoom={18}
-            scrollWheelZoom={false}
-            className="w-full h-96 rounded-lg"
-          >
-            <UpdateMapCenter />
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            <PSAssetSelectionInfoComponent
+              featurePreview={featurePreview || null}
+              featurePreviewData={featurePreviewData}
+              setFeaturePreviewData={setFeaturePreviewData}
+              canAddPreviewFeature={canAddPreviewFeature}
+              selectedFeatures={selectedFeatures}
+              setFeaturePreview={setFeaturePreview}
+              setSelectedFeatures={setSelectedFeatures}
             />
-            {featurePreview && (
-              <Marker
-                position={[
-                  featurePreview.geometry.coordinates[1],
-                  featurePreview.geometry.coordinates[0],
-                ]}
-              >
-                <Popup>
-                  {featurePreview.properties.label} <br />{" "}
-                  {featurePreview.properties.name}
-                </Popup>
-              </Marker>
-            )}
-          </MapContainer>
+          </div>
+          <LazyMap
+            lat={featurePreview?.geometry.coordinates[1] || null}
+            lon={featurePreview?.geometry.coordinates[0] || null}
+            markerLabel={{ label: "aze", name: "aze" }}
+          />
         </div>
       </div>
       <div className="basis-1/3">
-        <h1 className="text-xl font-bold">Résumé</h1>
-        {selectedFeatures.map((feature, index) => (
-          <div key={index}>
-            <span>{feature.properties.label}</span>
-          </div>
-        ))}
+        <PSAssetSelectionSummaryComponent selectedFeatures={selectedFeatures} />
         {/* <Button onClick={updateValidSteps} className="w-full mt-4"></Button> */}
       </div>
     </div>

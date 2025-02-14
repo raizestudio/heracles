@@ -13,3 +13,30 @@ class Menu(Model):
 
     def __str__(self):
         return self.name
+
+
+class Category(Model):
+    """Model for categories"""
+
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=255)
+    description = fields.TextField(null=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+
+class Tag(Model):
+    """Model for tags"""
+
+    id = fields.IntField(pk=True)
+    name = fields.CharField(max_length=255)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name

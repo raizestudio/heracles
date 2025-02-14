@@ -53,7 +53,7 @@ const PatronSimulationComponent = () => {
               <BreadcrumbItem key={index}>
                 <BreadcrumbPage
                   className={`select-none ${
-                    currentStep >= step.id ? "text-gray-950" : "text-gray-400"
+                    currentStep >= step.id ? "text-gray-950 dark:text-gray-50" : "text-gray-400"
                   } ${
                     currentStep >= step.id && currentStep !== step.id
                       ? "cursor-pointer"
